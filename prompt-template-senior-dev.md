@@ -95,3 +95,12 @@ Replace {TOPIC_DOMAIN} with one of: "Microservices", "System Design", "Java", "R
 Replace `{TOPIC_DOMAIN}` with your specific domain (e.g., "System Design", "Machine Learning", "Backend Development")
 Replace `{TOPIC_NAME}` with the specific topic you're generating notes for
 
+## Git Commit Instructions
+
+**After completing each required task:**
+1. Stage all changes: `git add .`
+2. Commit with a descriptive message: `git commit -m "Add [topic/feature description]"`
+3. Push to remote: `git push`
+
+This ensures work is saved incrementally and can be tracked throughout the development process.
+
