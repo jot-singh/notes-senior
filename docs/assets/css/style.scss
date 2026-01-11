@@ -1,0 +1,51 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+/* Fix heading rendering for h3 */
+h3 {
+  font-size: 1.5em !important;
+  font-weight: bold !important;
+  margin-top: 1.5em !important;
+  margin-bottom: 0.5em !important;
+  display: block !important;
+  line-height: 1.4 !important;
+}
+
+/* Ensure all heading levels are visible */
+h1, h2, h3, h4, h5, h6 {
+  display: block !important;
+  font-weight: bold !important;
+}
+
+h1 { font-size: 2.5em !important; }
+h2 { font-size: 2em !important; }
+h3 { font-size: 1.5em !important; }
+h4 { font-size: 1.25em !important; }
+h5 { font-size: 1.1em !important; }
+h6 { font-size: 1em !important; }
+
+/* Remove Recent Posts sidebar that overlaps TOC */
+aside,
+.sidebar,
+.recent-posts {
+  display: none !important;
+}
+
+/* Make main content full width without sidebar */
+#main_content {
+  width: 100% !important;
+  max-width: 100% !important;
+  float: none !important;
+}
+
+#main_content_wrap {
+  padding: 0 30px !important;
+}
+
+@media screen and (max-width: 768px) {
+  #main_content_wrap {
+    padding: 0 15px !important;
+  }
+}
