@@ -1,0 +1,89 @@
+docs:
+  - title: Microservices
+    children:
+      - title: "Fundamentals"
+        url: /microservices/01-microservices-fundamentals.html
+      - title: "Service Discovery"
+        url: /microservices/02-service-discovery.html
+      - title: "API Gateway"
+        url: /microservices/03-api-gateway.html
+      - title: "Event-Driven Architecture"
+        url: /microservices/04-event-driven-architecture.html
+      - title: "Service Mesh"
+        url: /microservices/05-service-mesh.html
+      - title: "Distributed Tracing"
+        url: /microservices/06-distributed-tracing.html
+      - title: "Circuit Breaker"
+        url: /microservices/07-circuit-breaker-pattern.html
+      - title: "Inter-Service Communication"
+        url: /microservices/08-inter-service-communication.html
+      - title: "Deployment"
+        url: /microservices/09-microservices-deployment.html
+      - title: "Configuration Management"
+        url: /microservices/10-configuration-management.html
+      - title: "Testing"
+        url: /microservices/11-microservices-testing.html
+      - title: "API Versioning"
+        url: /microservices/12-api-versioning-strategies.html
+
+  - title: System Design
+    children:
+      - title: "Load Balancing"
+        url: /system-design/01-load-balancing.html
+
+  - title: Java
+    children:
+      - title: "Fundamentals"
+        url: /java/01-java-fundamentals.html
+      - title: "Concurrency"
+        url: /java/02-java-concurrency.html
+      - title: "JVM Internals"
+        url: /java/03-jvm-internals.html
+      - title: "Design Patterns"
+        url: /java/04-java-design-patterns.html
+      - title: "Spring Framework"
+        url: /java/05-spring-framework.html
+      - title: "Performance Optimization"
+        url: /java/06-java-performance-optimization.html
+
+  - title: REST API
+    children:
+      - title: "Fundamentals"
+        url: /rest-api/01-rest-api-fundamentals.html
+      - title: "Design Principles"
+        url: /rest-api/02-api-design-principles.html
+      - title: "Authentication & Authorization"
+        url: /rest-api/03-authentication-authorization.html
+      - title: "Security"
+        url: /rest-api/04-security-best-practices.html
+
+  - title: Low-Level Design
+    children:
+      - title: "Fundamentals"
+        url: /lld/01-lld-fundamentals.html
+      - title: "Creational Patterns"
+        url: /lld/02-creational-patterns.html
+      - title: "Structural Patterns"
+        url: /lld/03-structural-patterns.html
+      - title: "Behavioral Patterns"
+        url: /lld/04-behavioral-patterns.html
+
+  - title: DBMS
+    children:
+      - title: "Fundamentals"
+        url: /dbms/01-dbms-fundamentals.html
+      - title: "Transactions & ACID"
+        url: /dbms/02-transactions-acid.html
+      - title: "Indexing"
+        url: /dbms/03-indexing.html
+      - title: "Normalization"
+        url: /dbms/04-normalization.html
+
+  - title: NoSQL
+    children:
+      - title: "Fundamentals"
+        url: /nosql/01-nosql-fundamentals.html
+      - title: "Cassandra"
+        url: /nosql/02-cassandra.html
+      - title: "MongoDB"
+        url: /nosql/03-mongodb.html
