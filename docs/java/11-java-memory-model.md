@@ -8,19 +8,32 @@ The Java Memory Model (JMM) defines how threads interact through memory and what
 
 ### Memory Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Main Memory                              │
-│                  (Shared Variables)                          │
-└─────────────────────────────────────────────────────────────┘
-         ▲              ▲              ▲
-         │              │              │
-    ┌────┴────┐    ┌────┴────┐    ┌────┴────┐
-    │ Thread 1 │    │ Thread 2 │    │ Thread 3 │
-    │  Cache   │    │  Cache   │    │  Cache   │
-    │ (Working │    │ (Working │    │ (Working │
-    │  Memory) │    │  Memory) │    │  Memory) │
-    └─────────┘    └─────────┘    └─────────┘
+```mermaid
+graph TB
+    MainMemory["Main Memory<br/>(Shared Variables)"]
+    
+    subgraph T1["Thread 1"]
+        Cache1["Cache<br/>(Working Memory)"]
+    end
+    
+    subgraph T2["Thread 2"]
+        Cache2["Cache<br/>(Working Memory)"]
+    end
+    
+    subgraph T3["Thread 3"]
+        Cache3["Cache<br/>(Working Memory)"]
+    end
+    
+    Cache1 <-->|Read/Write| MainMemory
+    Cache2 <-->|Read/Write| MainMemory
+    Cache3 <-->|Read/Write| MainMemory
+    
+    Note["Each thread has working memory (cache)<br/>that may hold copies of variables.<br/>Changes may not immediately propagate<br/>without proper synchronization."]
+    
+    style MainMemory fill:#e1f5ff,stroke:#333,stroke-width:2px
+    style T1 fill:#ffe1e1,stroke:#333,stroke-width:2px
+    style T2 fill:#e1ffe1,stroke:#333,stroke-width:2px
+    style T3 fill:#fff3e1,stroke:#333,stroke-width:2px
 ```
 
 Each thread has working memory (cache) that may hold copies of variables. Changes may not immediately propagate to main memory or other threads' caches without proper synchronization.
