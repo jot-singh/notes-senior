@@ -1,3 +1,8 @@
+---
+layout: default
+title: Microservices Fundamentals
+---
+
 # Microservices Fundamentals
 
 ## Overview
