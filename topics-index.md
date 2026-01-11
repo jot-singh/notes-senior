@@ -70,18 +70,18 @@ This document lists all topics in the recommended learning order for Senior Deve
 55. ⏳ **Design Principles** - DRY, KISS, YAGNI, and other important design principles
 
 ### DBMS (Relational Databases)
-56. ⏳ **Database Fundamentals** - Relational model, SQL basics, and database concepts
-57. ⏳ **ACID Properties** - Transaction management, isolation levels, and concurrency control
-58. ⏳ **Indexing** - Index types, B-tree, hash indexes, and index optimization
-59. ⏳ **Query Optimization** - Query execution plans, optimization techniques, and performance tuning
-60. ⏳ **Normalization** - Normal forms, denormalization, and database design
-61. ⏳ **Transactions & Locking** - Lock types, deadlocks, and transaction isolation
-62. ⏳ **Database Replication** - Master-slave replication, read replicas, and consistency
-63. ⏳ **Database Backup & Recovery** - Backup strategies, point-in-time recovery, and disaster recovery
+56. ✅ **Database Fundamentals** - Relational model, SQL basics, and database concepts
+57. ✅ **ACID Properties** - Transaction management, isolation levels, and concurrency control
+58. ✅ **Indexing** - Index types, B-tree, hash indexes, and index optimization
+59. ✅ **Query Optimization** - Query execution plans, optimization techniques, and performance tuning
+60. ✅ **Normalization** - Normal forms, denormalization, and database design
+61. ✅ **Transactions & Locking** - Lock types, deadlocks, and transaction isolation
+62. ✅ **Database Replication** - Master-slave replication, read replicas, and consistency
+63. ✅ **Database Backup & Recovery** - Backup strategies, point-in-time recovery, and disaster recovery
 64. ⏳ **Connection Pooling** - Connection management, pool sizing, and connection lifecycle
 65. ⏳ **Database Partitioning** - Table partitioning strategies, horizontal vs vertical partitioning
-66. ⏳ **SQL Advanced Topics** - Window functions, CTEs, stored procedures, and triggers
-67. ⏳ **Database Performance Tuning** - Profiling queries, identifying bottlenecks, and optimization techniques
+66. ✅ **SQL Advanced Topics** - Window functions, CTEs, stored procedures, and triggers
+67. ✅ **Database Performance Tuning** - Profiling queries, identifying bottlenecks, and optimization techniques
 
 ### NoSQL Databases
 68. ⏳ **NoSQL Overview** - NoSQL types, use cases, and when to use NoSQL vs SQL
