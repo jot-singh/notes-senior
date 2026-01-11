@@ -7,37 +7,32 @@ API versioning is essential for evolving microservices without breaking existing
 
 ## Why API Versioning?
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    API VERSIONING CHALLENGES                         │
-│                                                                      │
-│   Without Versioning:                                               │
-│                                                                      │
-│   ┌─────────────┐     v1.0      ┌─────────────┐                    │
-│   │  Mobile App │─────────────►│ Order API   │                     │
-│   │  (Old)      │               │             │                     │
-│   └─────────────┘               └─────────────┘                     │
-│                                       │                             │
-│   API Change (breaking)               │                             │
-│                                       ▼                             │
-│   ┌─────────────┐     v2.0      ┌─────────────┐                    │
-│   │  Mobile App │──────X───────►│ Order API   │  ← Mobile breaks!  │
-│   │  (Old)      │    (Breaks)   │             │                     │
-│   └─────────────┘               └─────────────┘                     │
-│                                                                      │
-│   With Versioning:                                                  │
-│                                                                      │
-│   ┌─────────────┐     /v1/*     ┌─────────────┐                    │
-│   │  Mobile App │─────────────►│ Order API   │                     │
-│   │  (Old)      │               │   v1 + v2   │  ← Both supported  │
-│   └─────────────┘               └─────────────┘                     │
-│                                       ▲                             │
-│   ┌─────────────┐     /v2/*           │                             │
-│   │  Web App    │─────────────────────┘                             │
-│   │  (New)      │                                                   │
-│   └─────────────┘                                                   │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Without["Without Versioning"]
+        OldApp1["Mobile App (Old)"]
+        API1["Order API v1.0"]
+        OldApp1 -->|v1.0| API1
+        
+        Break["API Change (breaking)"]
+        API1 --> Break
+        
+        OldApp2["Mobile App (Old)"]
+        API2["Order API v2.0"]
+        OldApp2 -.->|X Breaks!| API2
+    end
+    
+    subgraph With["With Versioning"]
+        OldApp3["Mobile App (Old)"]
+        WebApp["Web App (New)"]
+        API3["Order API<br/>(v1 + v2)<br/>✅ Both supported"]
+        
+        OldApp3 -->|/v1/*| API3
+        WebApp -->|/v2/*| API3
+    end
+    
+    style Without fill:#fcc,stroke:#333,stroke-width:2px
+    style With fill:#e1ffe1,stroke:#333,stroke-width:2px
 ```
 
 ---
