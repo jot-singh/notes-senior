@@ -1,0 +1,134 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+/* Lighter color scheme overrides */
+body {
+  background: linear-gradient(#f5f7fa, #e8ecf1) !important;
+  color: #2c3e50 !important;
+}
+
+#header {
+  background: linear-gradient(#4a90e2, #357abd) !important;
+}
+
+#header h1, #header h2 {
+  color: #ffffff !important;
+}
+
+#header nav a {
+  color: #ffffff !important;
+}
+
+#main_content_wrap {
+  background: #ffffff !important;
+}
+
+#main_content {
+  color: #2c3e50 !important;
+}
+
+#main_content h1, 
+#main_content h2, 
+#main_content h3, 
+#main_content h4, 
+#main_content h5, 
+#main_content h6 {
+  color: #2c3e50 !important;
+}
+
+#main_content a {
+  color: #4a90e2 !important;
+}
+
+#main_content a:hover {
+  color: #357abd !important;
+}
+
+#footer_wrap {
+  background: #f5f7fa !important;
+}
+
+.topic {
+  background: #f8f9fa !important;
+  border-left: 4px solid #4a90e2 !important;
+}
+
+/* Code blocks - lighter */
+pre, code {
+  background: #f6f8fa !important;
+  color: #24292e !important;
+  border: 1px solid #e1e4e8 !important;
+}
+
+pre code {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Syntax highlighting - light theme */
+.highlight {
+  background: #f6f8fa !important;
+}
+
+.highlight .c,
+.highlight .cm,
+.highlight .c1 {
+  color: #6a737d !important; /* comments */
+}
+
+.highlight .k,
+.highlight .kc,
+.highlight .kd,
+.highlight .kn,
+.highlight .kr {
+  color: #d73a49 !important; /* keywords */
+}
+
+.highlight .s,
+.highlight .s1,
+.highlight .s2,
+.highlight .sb,
+.highlight .sc {
+  color: #032f62 !important; /* strings */
+}
+
+.highlight .m,
+.highlight .mi,
+.highlight .mf,
+.highlight .mh {
+  color: #005cc5 !important; /* numbers */
+}
+
+.highlight .na,
+.highlight .nb,
+.highlight .nc,
+.highlight .nf {
+  color: #6f42c1 !important; /* functions */
+}
+
+blockquote {
+  background: #f6f8fa !important;
+  border-left: 4px solid #4a90e2 !important;
+  color: #586069 !important;
+}
+
+table {
+  background: #ffffff !important;
+}
+
+table th {
+  background: #f6f8fa !important;
+  color: #24292e !important;
+  border: 1px solid #e1e4e8 !important;
+}
+
+table td {
+  border: 1px solid #e1e4e8 !important;
+  color: #24292e !important;
+}
+
+hr {
+  border-color: #e1e4e8 !important;
+}
