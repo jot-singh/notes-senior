@@ -107,6 +107,27 @@ System design encompasses the architecture, components, and trade-offs involved 
 - DDoS protection and rate limiting
 - Security best practices and anti-patterns
 
+### 15. [Distributed Transactions](15-distributed-transactions.md)
+- Two-phase commit (2PC) protocol
+- Saga pattern (choreography vs orchestration)
+- Try-Cancel/Confirm (TCC) pattern
+- Compensation and rollback strategies
+- XA transactions and distributed coordinators
+
+### 16. [CQRS and Event Sourcing](16-cqrs-event-sourcing.md)
+- Command Query Responsibility Segregation
+- Event Store implementation
+- Event sourcing fundamentals
+- Projections and read models
+- Snapshotting and event versioning
+
+### 17. [Back-of-Envelope Calculations](17-back-of-envelope-calculations.md)
+- Capacity estimation techniques
+- QPS and throughput calculations
+- Storage and bandwidth requirements
+- Latency numbers every programmer should know
+- Real-world examples (Twitter, URL shortener)
+
 ## Core Concepts
 
 ### Scalability
