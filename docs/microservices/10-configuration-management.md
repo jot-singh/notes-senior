@@ -7,35 +7,28 @@ Configuration management in microservices involves externalizing application set
 
 ## The Twelve-Factor App Configuration Principle
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    CONFIGURATION PRINCIPLES                          │
-│                                                                      │
-│   ┌─────────────────────────────────────────────────────────────┐   │
-│   │  1. EXTERNALIZE CONFIGURATION                                │   │
-│   │     - No hardcoded values in code                           │   │
-│   │     - Environment variables for deployment-specific config  │   │
-│   │     - Config files for structured settings                  │   │
-│   └─────────────────────────────────────────────────────────────┘   │
-│                                                                      │
-│   ┌─────────────────────────────────────────────────────────────┐   │
-│   │  2. ENVIRONMENT PARITY                                       │   │
-│   │     - Same codebase, different configs                      │   │
-│   │     - Dev/Staging/Prod differ only in config                │   │
-│   └─────────────────────────────────────────────────────────────┘   │
-│                                                                      │
-│   ┌─────────────────────────────────────────────────────────────┐   │
-│   │  3. SECRETS SEPARATION                                       │   │
-│   │     - Never store secrets in code or version control        │   │
-│   │     - Use dedicated secrets management                      │   │
-│   └─────────────────────────────────────────────────────────────┘   │
-│                                                                      │
-│   Config Types:                                                     │
-│   • Static: Bootstrap config, rarely changes                       │
-│   • Dynamic: Feature flags, can change at runtime                  │
-│   • Secrets: Credentials, API keys, certificates                   │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph Principles["CONFIGURATION PRINCIPLES"]
+        subgraph P1["1. EXTERNALIZE CONFIGURATION"]
+            E1["• No hardcoded values in code<br/>• Environment variables for deployment config<br/>• Config files for structured settings"]
+        end
+        
+        subgraph P2["2. ENVIRONMENT PARITY"]
+            E2["• Same codebase, different configs<br/>• Dev/Staging/Prod differ only in config"]
+        end
+        
+        subgraph P3["3. SECRETS SEPARATION"]
+            E3["• Never store secrets in code or version control<br/>• Use dedicated secrets management"]
+        end
+        
+        Types["Config Types:<br/>• Static: Bootstrap config, rarely changes<br/>• Dynamic: Feature flags, runtime changeable<br/>• Secrets: Credentials, API keys, certificates"]
+    end
+    
+    style Principles fill:#e1f5ff,stroke:#333,stroke-width:2px
+    style P1 fill:#ffe1e1,stroke:#333,stroke-width:2px
+    style P2 fill:#e1ffe1,stroke:#333,stroke-width:2px
+    style P3 fill:#fff3e1,stroke:#333,stroke-width:2px
 ```
 
 ---

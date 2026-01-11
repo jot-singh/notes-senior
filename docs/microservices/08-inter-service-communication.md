@@ -7,38 +7,33 @@ Inter-service communication is the backbone of microservices architecture. Choos
 
 ## Communication Patterns Overview
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                 COMMUNICATION PATTERNS                               │
-│                                                                      │
-│   ┌───────────────────────────────────────────────────────────────┐ │
-│   │                    SYNCHRONOUS                                 │ │
-│   │                                                                │ │
-│   │   ┌────────┐    Request    ┌────────┐                         │ │
-│   │   │Service │──────────────►│Service │                         │ │
-│   │   │   A    │               │   B    │                         │ │
-│   │   │        │◄──────────────│        │                         │ │
-│   │   └────────┘    Response   └────────┘                         │ │
-│   │                                                                │ │
-│   │   • REST APIs           • Tight coupling                      │ │
-│   │   • gRPC                • Blocking calls                      │ │
-│   │   • GraphQL             • Immediate response                  │ │
-│   └───────────────────────────────────────────────────────────────┘ │
-│                                                                      │
-│   ┌───────────────────────────────────────────────────────────────┐ │
-│   │                    ASYNCHRONOUS                                │ │
-│   │                                                                │ │
-│   │   ┌────────┐    Message    ┌────────┐    Message   ┌────────┐ │ │
-│   │   │Service │──────────────►│ Broker │─────────────►│Service │ │ │
-│   │   │   A    │               │        │              │   B    │ │ │
-│   │   └────────┘               └────────┘              └────────┘ │ │
-│   │                                                                │ │
-│   │   • Message Queues      • Loose coupling                      │ │
-│   │   • Event Streaming     • Non-blocking                        │ │
-│   │   • Pub/Sub             • Fire-and-forget                     │ │
-│   └───────────────────────────────────────────────────────────────┘ │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph Patterns["COMMUNICATION PATTERNS"]
+        subgraph Sync["SYNCHRONOUS"]
+            SA["Service A"]
+            SB["Service B"]
+            SA -->|Request| SB
+            SB -->|Response| SA
+            
+            SyncFeatures["• REST APIs<br/>• gRPC<br/>• GraphQL"]
+            SyncChars["• Tight coupling<br/>• Blocking calls<br/>• Immediate response"]
+        end
+        
+        subgraph Async["ASYNCHRONOUS"]
+            SAA["Service A"]
+            Broker["Message Broker"]
+            SBB["Service B"]
+            SAA -->|Message| Broker
+            Broker -->|Message| SBB
+            
+            AsyncFeatures["• Message Queues<br/>• Event Streaming<br/>• Pub/Sub"]
+            AsyncChars["• Loose coupling<br/>• Non-blocking<br/>• Fire-and-forget"]
+        end
+    end
+    
+    style Sync fill:#ffe1e1,stroke:#333,stroke-width:2px
+    style Async fill:#e1ffe1,stroke:#333,stroke-width:2px
 ```
 
 ---
