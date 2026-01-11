@@ -1,0 +1,797 @@
+<h1 id="microservices-fundamentals">Microservices Fundamentals</h1>
+
+<h2 id="overview">Overview</h2>
+<p>Microservices architecture is a design approach where an application is built as a collection of loosely coupled, independently deployable services. Each service is self-contained, focuses on a specific business capability, and communicates with other services through well-defined APIs.</p>
+
+<hr />
+
+<h2 id="monolith-vs-microservices">Monolith vs Microservices</h2>
+
+<h3 id="monolithic-architecture">Monolithic Architecture</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌─────────────────────────────────────────────────────────────┐
+│                    MONOLITHIC APPLICATION                    │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │   User UI   │  │  Admin UI   │  │    Reporting UI     │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │User Service │  │Order Service│  │  Inventory Service  │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+├─────────────────────────────────────────────────────────────┤
+│                    Shared Database                           │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │   Users     │  │   Orders    │  │     Inventory       │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div></div>
+
+<p><strong>Characteristics:</strong></p>
+<ul>
+  <li>Single deployable unit</li>
+  <li>Shared codebase and database</li>
+  <li>Tightly coupled components</li>
+  <li>Single technology stack</li>
+</ul>
+
+<p><strong>Pros:</strong></p>
+<ul>
+  <li>Simple to develop initially</li>
+  <li>Easy to test end-to-end</li>
+  <li>Simple deployment (one artifact)</li>
+  <li>No network latency between components</li>
+  <li>ACID transactions across all data</li>
+</ul>
+
+<p><strong>Cons:</strong></p>
+<ul>
+  <li>Scaling requires scaling entire application</li>
+  <li>Technology lock-in</li>
+  <li>Large codebase becomes hard to understand</li>
+  <li>Long build and deployment times</li>
+  <li>Single point of failure</li>
+  <li>Team coordination overhead</li>
+</ul>
+
+<h3 id="microservices-architecture">Microservices Architecture</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌──────────────────────────────────────────────────────────────────────────┐
+│                              API GATEWAY                                  │
+└─────────────────────────────────┬────────────────────────────────────────┘
+                                  │
+        ┌─────────────────────────┼─────────────────────────┐
+        │                         │                         │
+        ▼                         ▼                         ▼
+┌───────────────┐         ┌───────────────┐         ┌───────────────┐
+│ User Service  │         │ Order Service │         │Inventory Svc  │
+│   (Node.js)   │         │    (Java)     │         │   (Python)    │
+├───────────────┤         ├───────────────┤         ├───────────────┤
+│   MongoDB     │         │  PostgreSQL   │         │     Redis     │
+└───────────────┘         └───────────────┘         └───────────────┘
+        │                         │                         │
+        └─────────────────────────┼─────────────────────────┘
+                                  │
+                    ┌─────────────┴─────────────┐
+                    │      Message Broker       │
+                    │     (Kafka/RabbitMQ)      │
+                    └───────────────────────────┘
+</code></pre></div></div>
+
+<p><strong>Characteristics:</strong></p>
+<ul>
+  <li>Multiple independently deployable services</li>
+  <li>Each service owns its data</li>
+  <li>Loosely coupled through APIs</li>
+  <li>Polyglot technology stack</li>
+</ul>
+
+<p><strong>Pros:</strong></p>
+<ul>
+  <li>Independent scaling of services</li>
+  <li>Technology flexibility per service</li>
+  <li>Faster development cycles</li>
+  <li>Fault isolation</li>
+  <li>Team autonomy</li>
+  <li>Easier to understand individual services</li>
+</ul>
+
+<p><strong>Cons:</strong></p>
+<ul>
+  <li>Distributed system complexity</li>
+  <li>Network latency and reliability</li>
+  <li>Data consistency challenges</li>
+  <li>Operational overhead</li>
+  <li>Testing complexity</li>
+  <li>Debugging across services</li>
+</ul>
+
+<hr />
+
+<h2 id="comparison-table">Comparison Table</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Aspect</th>
+      <th>Monolith</th>
+      <th>Microservices</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Deployment</strong></td>
+      <td>Single unit</td>
+      <td>Independent services</td>
+    </tr>
+    <tr>
+      <td><strong>Scaling</strong></td>
+      <td>Entire application</td>
+      <td>Individual services</td>
+    </tr>
+    <tr>
+      <td><strong>Technology</strong></td>
+      <td>Single stack</td>
+      <td>Polyglot</td>
+    </tr>
+    <tr>
+      <td><strong>Database</strong></td>
+      <td>Shared</td>
+      <td>Per service</td>
+    </tr>
+    <tr>
+      <td><strong>Team Structure</strong></td>
+      <td>Large teams</td>
+      <td>Small, autonomous teams</td>
+    </tr>
+    <tr>
+      <td><strong>Complexity</strong></td>
+      <td>Application complexity</td>
+      <td>Infrastructure complexity</td>
+    </tr>
+    <tr>
+      <td><strong>Failure Impact</strong></td>
+      <td>System-wide</td>
+      <td>Service-level isolation</td>
+    </tr>
+    <tr>
+      <td><strong>Development Speed</strong></td>
+      <td>Slower as app grows</td>
+      <td>Faster with clear boundaries</td>
+    </tr>
+    <tr>
+      <td><strong>Testing</strong></td>
+      <td>Simpler E2E</td>
+      <td>Complex integration</td>
+    </tr>
+    <tr>
+      <td><strong>Transactions</strong></td>
+      <td>ACID</td>
+      <td>Eventual consistency (Saga)</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="service-boundaries">Service Boundaries</h2>
+
+<h3 id="what-is-a-service-boundary">What is a Service Boundary?</h3>
+<p>A service boundary defines the scope and responsibility of a microservice. It determines what functionality belongs to which service and how services interact.</p>
+
+<h3 id="domain-driven-design-ddd-approach">Domain-Driven Design (DDD) Approach</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌─────────────────────────────────────────────────────────────────────┐
+│                         E-COMMERCE DOMAIN                            │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐    │
+│  │ Customer        │   │ Order           │   │ Inventory       │    │
+│  │ Bounded Context │   │ Bounded Context │   │ Bounded Context │    │
+│  │                 │   │                 │   │                 │    │
+│  │ • Customer      │   │ • Order         │   │ • Product       │    │
+│  │ • Address       │   │ • OrderLine     │   │ • Stock         │    │
+│  │ • Preferences   │   │ • Payment       │   │ • Warehouse     │    │
+│  └─────────────────┘   └─────────────────┘   └─────────────────┘    │
+│                                                                      │
+│  ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐    │
+│  │ Shipping        │   │ Notification    │   │ Analytics       │    │
+│  │ Bounded Context │   │ Bounded Context │   │ Bounded Context │    │
+│  │                 │   │                 │   │                 │    │
+│  │ • Shipment      │   │ • Email         │   │ • Events        │    │
+│  │ • Carrier       │   │ • SMS           │   │ • Reports       │    │
+│  │ • Tracking      │   │ • Push          │   │ • Dashboards    │    │
+│  └─────────────────┘   └─────────────────┘   └─────────────────┘    │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+</code></pre></div></div>
+
+<h3 id="key-ddd-concepts">Key DDD Concepts</h3>
+
+<p><strong>Bounded Context:</strong></p>
+<ul>
+  <li>A boundary within which a domain model is defined and applicable</li>
+  <li>Different contexts can have different models for the same concept</li>
+  <li>Clear interfaces between contexts</li>
+</ul>
+
+<p><strong>Ubiquitous Language:</strong></p>
+<ul>
+  <li>Shared vocabulary between developers and domain experts</li>
+  <li>Consistent within a bounded context</li>
+  <li>May differ across contexts</li>
+</ul>
+
+<p><strong>Aggregate:</strong></p>
+<ul>
+  <li>A cluster of domain objects treated as a single unit</li>
+  <li>Has a root entity that controls access</li>
+  <li>Boundary for transactions</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Order Aggregate Example</span>
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Order</span> <span class="o">{</span>  <span class="c1">// Aggregate Root</span>
+    <span class="nd">@Id</span>
+    <span class="kd">private</span> <span class="nc">OrderId</span> <span class="n">id</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">CustomerId</span> <span class="n">customerId</span><span class="o">;</span>
+    
+    <span class="nd">@OneToMany</span><span class="o">(</span><span class="n">cascade</span> <span class="o">=</span> <span class="nc">CascadeType</span><span class="o">.</span><span class="na">ALL</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">OrderLine</span><span class="o">&gt;</span> <span class="n">orderLines</span><span class="o">;</span>  <span class="c1">// Part of aggregate</span>
+    
+    <span class="kd">private</span> <span class="nc">Money</span> <span class="n">totalAmount</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">OrderStatus</span> <span class="n">status</span><span class="o">;</span>
+    
+    <span class="c1">// Business logic encapsulated in aggregate</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addItem</span><span class="o">(</span><span class="nc">ProductId</span> <span class="n">productId</span><span class="o">,</span> <span class="kt">int</span> <span class="n">quantity</span><span class="o">,</span> <span class="nc">Money</span> <span class="n">price</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">OrderLine</span> <span class="n">line</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">OrderLine</span><span class="o">(</span><span class="n">productId</span><span class="o">,</span> <span class="n">quantity</span><span class="o">,</span> <span class="n">price</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">orderLines</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">line</span><span class="o">);</span>
+        <span class="n">recalculateTotal</span><span class="o">();</span>
+    <span class="o">}</span>
+    
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">confirm</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">orderLines</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">InvalidOrderException</span><span class="o">(</span><span class="s">"Cannot confirm empty order"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">status</span> <span class="o">=</span> <span class="nc">OrderStatus</span><span class="o">.</span><span class="na">CONFIRMED</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">recalculateTotal</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">totalAmount</span> <span class="o">=</span> <span class="n">orderLines</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">OrderLine:</span><span class="o">:</span><span class="n">getSubtotal</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">reduce</span><span class="o">(</span><span class="nc">Money</span><span class="o">.</span><span class="na">ZERO</span><span class="o">,</span> <span class="nl">Money:</span><span class="o">:</span><span class="n">add</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="identifying-service-boundaries">Identifying Service Boundaries</h3>
+
+<p><strong>1. Business Capability Decomposition:</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>E-Commerce Platform
+├── Customer Management
+│   ├── Registration
+│   ├── Authentication
+│   └── Profile Management
+├── Product Catalog
+│   ├── Product Information
+│   ├── Categories
+│   └── Search
+├── Order Management
+│   ├── Shopping Cart
+│   ├── Checkout
+│   └── Order History
+├── Payment Processing
+│   ├── Payment Methods
+│   ├── Transactions
+│   └── Refunds
+└── Fulfillment
+    ├── Inventory
+    ├── Shipping
+    └── Returns
+</code></pre></div></div>
+
+<p><strong>2. Subdomain Analysis:</strong></p>
+<ul>
+  <li><strong>Core Domain:</strong> Primary competitive advantage (e.g., recommendation engine)</li>
+  <li><strong>Supporting Domain:</strong> Supports core but not differentiating (e.g., order management)</li>
+  <li><strong>Generic Domain:</strong> Common functionality (e.g., authentication, notifications)</li>
+</ul>
+
+<hr />
+
+<h2 id="decomposition-strategies">Decomposition Strategies</h2>
+
+<h3 id="1-decompose-by-business-capability">1. Decompose by Business Capability</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌─────────────────────────────────────────────────────────────┐
+│                    BUSINESS CAPABILITIES                     │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│   SALES              MARKETING           FULFILLMENT         │
+│   ┌─────────────┐   ┌─────────────┐   ┌─────────────┐       │
+│   │ Order Svc   │   │ Campaign Svc│   │ Shipping Svc│       │
+│   │ Pricing Svc │   │ Promo Svc   │   │Warehouse Svc│       │
+│   │ Quote Svc   │   │ Email Svc   │   │ Returns Svc │       │
+│   └─────────────┘   └─────────────┘   └─────────────┘       │
+│                                                              │
+│   FINANCE            CUSTOMER            PRODUCT             │
+│   ┌─────────────┐   ┌─────────────┐   ┌─────────────┐       │
+│   │ Billing Svc │   │ Profile Svc │   │ Catalog Svc │       │
+│   │ Invoice Svc │   │ Support Svc │   │ Search Svc  │       │
+│   │ Payment Svc │   │ Review Svc  │   │ Inventory   │       │
+│   └─────────────┘   └─────────────┘   └─────────────┘       │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div></div>
+
+<p><strong>Approach:</strong></p>
+<ol>
+  <li>Identify business capabilities</li>
+  <li>Map services to capabilities</li>
+  <li>One service per capability</li>
+  <li>Services are stable as capabilities rarely change</li>
+</ol>
+
+<h3 id="2-decompose-by-subdomain-ddd">2. Decompose by Subdomain (DDD)</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Context Map showing relationships between bounded contexts</span>
+<span class="cm">/*
+ ┌─────────────┐        ┌─────────────┐
+ │   Order     │◄──────►│  Customer   │
+ │   Context   │  U/D   │   Context   │
+ └─────────────┘        └─────────────┘
+        │
+        │ Published
+        │ Language
+        ▼
+ ┌─────────────┐        ┌─────────────┐
+ │  Shipping   │◄──────►│  Inventory  │
+ │   Context   │  ACL   │   Context   │
+ └─────────────┘        └─────────────┘
+
+ Relationships:
+ - U/D: Upstream/Downstream
+ - ACL: Anti-Corruption Layer
+ - Published Language: Shared schema
+*/</span>
+</code></pre></div></div>
+
+<h3 id="3-strangler-fig-pattern-migration-strategy">3. Strangler Fig Pattern (Migration Strategy)</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                    Step 1: Add Facade
+┌─────────────────────────────────────────────────────────────┐
+│                        FACADE/PROXY                          │
+└─────────────────────────────────┬───────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    EXISTING MONOLITH                         │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────────┐     │
+│  │ Users   │  │ Orders  │  │Products │  │  Payments   │     │
+│  └─────────┘  └─────────┘  └─────────┘  └─────────────┘     │
+└─────────────────────────────────────────────────────────────┘
+
+                    Step 2: Extract Services
+┌─────────────────────────────────────────────────────────────┐
+│                        FACADE/PROXY                          │
+└──────────────────────────┬──────────────────────────────────┘
+              ┌────────────┴────────────┐
+              ▼                         ▼
+┌─────────────────────┐    ┌──────────────────────────────────┐
+│   User Service      │    │        EXISTING MONOLITH         │
+│   (Extracted)       │    │  ┌─────────┐  ┌─────────────┐    │
+└─────────────────────┘    │  │ Orders  │  │  Payments   │    │
+                           │  └─────────┘  └─────────────┘    │
+                           └──────────────────────────────────┘
+
+                    Step 3: Continue Extraction
+┌─────────────────────────────────────────────────────────────┐
+│                        API GATEWAY                           │
+└──────────────────────────┬──────────────────────────────────┘
+     ┌─────────────────────┼─────────────────────┐
+     ▼                     ▼                     ▼
+┌──────────┐        ┌──────────┐          ┌──────────┐
+│  Users   │        │  Orders  │          │ Payments │
+│ Service  │        │ Service  │          │ Service  │
+└──────────┘        └──────────┘          └──────────┘
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Strangler Fig Implementation Example</span>
+<span class="nd">@RestController</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/api"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">StranglerFigFacade</span> <span class="o">{</span>
+    
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">LegacyMonolithClient</span> <span class="n">legacyClient</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">UserServiceClient</span> <span class="n">userServiceClient</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">FeatureFlagService</span> <span class="n">featureFlags</span><span class="o">;</span>
+    
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/users/{id}"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="nf">getUser</span><span class="o">(</span><span class="nd">@PathVariable</span> <span class="nc">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Route to new service if feature flag enabled</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">featureFlags</span><span class="o">.</span><span class="na">isEnabled</span><span class="o">(</span><span class="s">"use-new-user-service"</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nc">ResponseEntity</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="n">userServiceClient</span><span class="o">.</span><span class="na">getUser</span><span class="o">(</span><span class="n">id</span><span class="o">));</span>
+        <span class="o">}</span>
+        <span class="c1">// Fall back to legacy</span>
+        <span class="k">return</span> <span class="nc">ResponseEntity</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="n">legacyClient</span><span class="o">.</span><span class="na">getUser</span><span class="o">(</span><span class="n">id</span><span class="o">));</span>
+    <span class="o">}</span>
+    
+    <span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"/orders"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">OrderDTO</span><span class="o">&gt;</span> <span class="nf">createOrder</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nc">OrderRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Still using legacy for orders</span>
+        <span class="k">return</span> <span class="nc">ResponseEntity</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="n">legacyClient</span><span class="o">.</span><span class="na">createOrder</span><span class="o">(</span><span class="n">request</span><span class="o">));</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="4-branch-by-abstraction">4. Branch by Abstraction</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Step 1: Create abstraction</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserRepository</span> <span class="o">{</span>
+    <span class="nc">User</span> <span class="nf">findById</span><span class="o">(</span><span class="nc">String</span> <span class="n">id</span><span class="o">);</span>
+    <span class="kt">void</span> <span class="nf">save</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="c1">// Step 2: Existing implementation</span>
+<span class="nd">@Repository</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LegacyUserRepository</span> <span class="kd">implements</span> <span class="nc">UserRepository</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">JdbcTemplate</span> <span class="n">jdbcTemplate</span><span class="o">;</span>
+    
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">User</span> <span class="nf">findById</span><span class="o">(</span><span class="nc">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Legacy database call</span>
+        <span class="k">return</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span>
+            <span class="s">"SELECT * FROM users WHERE id = ?"</span><span class="o">,</span>
+            <span class="k">new</span> <span class="nf">UserRowMapper</span><span class="o">(),</span>
+            <span class="n">id</span>
+        <span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Step 3: New implementation</span>
+<span class="nd">@Repository</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MicroserviceUserRepository</span> <span class="kd">implements</span> <span class="nc">UserRepository</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">UserServiceClient</span> <span class="n">client</span><span class="o">;</span>
+    
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">User</span> <span class="nf">findById</span><span class="o">(</span><span class="nc">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Call to new microservice</span>
+        <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="na">getUser</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Step 4: Switch implementations</span>
+<span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RepositoryConfig</span> <span class="o">{</span>
+    
+    <span class="nd">@Bean</span>
+    <span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"user.repository.type"</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">"legacy"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">UserRepository</span> <span class="nf">legacyUserRepository</span><span class="o">(</span><span class="nc">JdbcTemplate</span> <span class="n">jdbcTemplate</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">LegacyUserRepository</span><span class="o">(</span><span class="n">jdbcTemplate</span><span class="o">);</span>
+    <span class="o">}</span>
+    
+    <span class="nd">@Bean</span>
+    <span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"user.repository.type"</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">"microservice"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">UserRepository</span> <span class="nf">microserviceUserRepository</span><span class="o">(</span><span class="nc">UserServiceClient</span> <span class="n">client</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">MicroserviceUserRepository</span><span class="o">(</span><span class="n">client</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="microservices-design-principles">Microservices Design Principles</h2>
+
+<h3 id="1-single-responsibility">1. Single Responsibility</h3>
+<p>Each service should do one thing and do it well.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Good: Focused service</span>
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PaymentService</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">PaymentResult</span> <span class="nf">processPayment</span><span class="o">(</span><span class="nc">PaymentRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="nc">RefundResult</span> <span class="nf">processRefund</span><span class="o">(</span><span class="nc">RefundRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="nc">PaymentStatus</span> <span class="nf">getPaymentStatus</span><span class="o">(</span><span class="nc">String</span> <span class="n">paymentId</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Bad: Service doing too much</span>
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderPaymentShippingService</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">Order</span> <span class="nf">createOrder</span><span class="o">(</span><span class="nc">OrderRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="nc">PaymentResult</span> <span class="nf">processPayment</span><span class="o">(</span><span class="nc">PaymentRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="nc">Shipment</span> <span class="nf">createShipment</span><span class="o">(</span><span class="nc">ShipmentRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendNotification</span><span class="o">(</span><span class="nc">NotificationRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="2-loose-coupling">2. Loose Coupling</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Tight Coupling (Bad)</span>
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderService</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">InventoryService</span> <span class="n">inventoryService</span><span class="o">;</span>  <span class="c1">// Direct dependency</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">PaymentService</span> <span class="n">paymentService</span><span class="o">;</span>
+    
+    <span class="kd">public</span> <span class="nc">Order</span> <span class="nf">createOrder</span><span class="o">(</span><span class="nc">OrderRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Synchronous calls creating tight coupling</span>
+        <span class="n">inventoryService</span><span class="o">.</span><span class="na">reserveStock</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getItems</span><span class="o">());</span>
+        <span class="n">paymentService</span><span class="o">.</span><span class="na">processPayment</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getPayment</span><span class="o">());</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Order</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Loose Coupling (Good) - Event-Driven</span>
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderService</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">EventPublisher</span> <span class="n">eventPublisher</span><span class="o">;</span>
+    
+    <span class="kd">public</span> <span class="nc">Order</span> <span class="nf">createOrder</span><span class="o">(</span><span class="nc">OrderRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Order</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+        <span class="n">order</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="nc">OrderStatus</span><span class="o">.</span><span class="na">PENDING</span><span class="o">);</span>
+        
+        <span class="c1">// Publish event instead of direct calls</span>
+        <span class="n">eventPublisher</span><span class="o">.</span><span class="na">publish</span><span class="o">(</span><span class="k">new</span> <span class="nc">OrderCreatedEvent</span><span class="o">(</span><span class="n">order</span><span class="o">));</span>
+        
+        <span class="k">return</span> <span class="n">order</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">InventoryEventHandler</span> <span class="o">{</span>
+    <span class="nd">@EventListener</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleOrderCreated</span><span class="o">(</span><span class="nc">OrderCreatedEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">reserveStock</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="na">getOrder</span><span class="o">().</span><span class="na">getItems</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="3-high-cohesion">3. High Cohesion</h3>
+<p>Related functionality should be grouped together.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// High Cohesion - All user-related functionality together</span>
+<span class="nd">@RestController</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/api/users"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserController</span> <span class="o">{</span>
+    
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">UserService</span> <span class="n">userService</span><span class="o">;</span>
+    
+    <span class="nd">@PostMapping</span>
+    <span class="kd">public</span> <span class="nc">User</span> <span class="nf">createUser</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nc">CreateUserRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+    
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/{id}"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">User</span> <span class="nf">getUser</span><span class="o">(</span><span class="nd">@PathVariable</span> <span class="nc">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+    
+    <span class="nd">@PutMapping</span><span class="o">(</span><span class="s">"/{id}"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">User</span> <span class="nf">updateUser</span><span class="o">(</span><span class="nd">@PathVariable</span> <span class="nc">String</span> <span class="n">id</span><span class="o">,</span> <span class="nd">@RequestBody</span> <span class="nc">UpdateUserRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+    
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/{id}/preferences"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">UserPreferences</span> <span class="nf">getPreferences</span><span class="o">(</span><span class="nd">@PathVariable</span> <span class="nc">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+    
+    <span class="nd">@PutMapping</span><span class="o">(</span><span class="s">"/{id}/preferences"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">UserPreferences</span> <span class="nf">updatePreferences</span><span class="o">(</span><span class="nd">@PathVariable</span> <span class="nc">String</span> <span class="n">id</span><span class="o">,</span> <span class="nd">@RequestBody</span> <span class="nc">UserPreferences</span> <span class="n">prefs</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="4-database-per-service">4. Database per Service</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│  User Service   │     │  Order Service  │     │ Product Service │
+└────────┬────────┘     └────────┬────────┘     └────────┬────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+   ┌──────────┐            ┌──────────┐            ┌──────────┐
+   │ User DB  │            │ Order DB │            │Product DB│
+   │ (MySQL)  │            │(Postgres)│            │(MongoDB) │
+   └──────────┘            └──────────┘            └──────────┘
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Each service has its own data source configuration</span>
+<span class="nd">@Configuration</span>
+<span class="nd">@EnableJpaRepositories</span><span class="o">(</span><span class="n">basePackages</span> <span class="o">=</span> <span class="s">"com.example.order.repository"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderDatabaseConfig</span> <span class="o">{</span>
+    
+    <span class="nd">@Bean</span>
+    <span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="s">"spring.datasource.order"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">DataSource</span> <span class="nf">orderDataSource</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">DataSourceBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">().</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="5-api-first-design">5. API First Design</h3>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># OpenAPI specification first</span>
+<span class="na">openapi</span><span class="pi">:</span> <span class="s">3.0.0</span>
+<span class="na">info</span><span class="pi">:</span>
+  <span class="na">title</span><span class="pi">:</span> <span class="s">Order Service API</span>
+  <span class="na">version</span><span class="pi">:</span> <span class="s">1.0.0</span>
+<span class="na">paths</span><span class="pi">:</span>
+  <span class="na">/orders</span><span class="pi">:</span>
+    <span class="na">post</span><span class="pi">:</span>
+      <span class="na">summary</span><span class="pi">:</span> <span class="s">Create a new order</span>
+      <span class="na">requestBody</span><span class="pi">:</span>
+        <span class="na">required</span><span class="pi">:</span> <span class="kc">true</span>
+        <span class="na">content</span><span class="pi">:</span>
+          <span class="na">application/json</span><span class="pi">:</span>
+            <span class="na">schema</span><span class="pi">:</span>
+              <span class="na">$ref</span><span class="pi">:</span> <span class="s1">'</span><span class="s">#/components/schemas/CreateOrderRequest'</span>
+      <span class="na">responses</span><span class="pi">:</span>
+        <span class="s1">'</span><span class="s">201'</span><span class="err">:</span>
+          <span class="na">description</span><span class="pi">:</span> <span class="s">Order created</span>
+          <span class="na">content</span><span class="pi">:</span>
+            <span class="na">application/json</span><span class="pi">:</span>
+              <span class="na">schema</span><span class="pi">:</span>
+                <span class="na">$ref</span><span class="pi">:</span> <span class="s1">'</span><span class="s">#/components/schemas/Order'</span>
+      <span class="err">  </span><span class="s1">'</span><span class="s">400'</span><span class="err">:</span>
+          <span class="na">description</span><span class="pi">:</span> <span class="s">Invalid request</span>
+          <span class="na">content</span><span class="pi">:</span>
+            <span class="na">application/json</span><span class="pi">:</span>
+              <span class="na">schema</span><span class="pi">:</span>
+                <span class="na">$ref</span><span class="pi">:</span> <span class="s1">'</span><span class="s">#/components/schemas/Error'</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="service-size-guidelines">Service Size Guidelines</h2>
+
+<h3 id="too-small-nano-services">Too Small (Nano-services)</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❌ Avoid excessive fragmentation:
+   - UserNameService
+   - UserEmailService
+   - UserAddressService
+   - UserPhoneService
+
+✓ Combine into cohesive service:
+   - UserService
+</code></pre></div></div>
+
+<h3 id="too-large-mini-monolith">Too Large (Mini-monolith)</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❌ Avoid services that are too broad:
+   - CustomerManagementService (handles users, orders, payments, shipping)
+
+✓ Split by business capability:
+   - UserService
+   - OrderService
+   - PaymentService
+   - ShippingService
+</code></pre></div></div>
+
+<h3 id="right-size-guidelines">Right Size Guidelines</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Factor</th>
+      <th>Guideline</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Team Size</strong></td>
+      <td>2 pizza team (5-9 people) per service</td>
+    </tr>
+    <tr>
+      <td><strong>Codebase</strong></td>
+      <td>Rewritable in 2-4 weeks</td>
+    </tr>
+    <tr>
+      <td><strong>Scope</strong></td>
+      <td>Single bounded context</td>
+    </tr>
+    <tr>
+      <td><strong>Deployment</strong></td>
+      <td>Independently deployable</td>
+    </tr>
+    <tr>
+      <td><strong>Data</strong></td>
+      <td>Owns its data completely</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="common-anti-patterns">Common Anti-Patterns</h2>
+
+<h3 id="1-distributed-monolith">1. Distributed Monolith</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Problem: Services are deployed separately but still tightly coupled
+
+┌──────────┐ sync ┌──────────┐ sync ┌──────────┐
+│Service A │─────►│Service B │─────►│Service C │
+└──────────┘      └──────────┘      └──────────┘
+     │                 │                 │
+     └─────────────────┴─────────────────┘
+              Shared Database
+              
+Solution: True service independence with async communication
+</code></pre></div></div>
+
+<h3 id="2-shared-database-anti-pattern">2. Shared Database Anti-Pattern</h3>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Anti-pattern: Multiple services accessing same tables</span>
+<span class="c1">// Service A</span>
+<span class="nd">@Repository</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderRepositoryA</span> <span class="o">{</span>
+    <span class="nd">@Query</span><span class="o">(</span><span class="s">"SELECT o FROM Order o WHERE o.customerId = :customerId"</span><span class="o">)</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="nf">findByCustomerId</span><span class="o">(</span><span class="nc">String</span> <span class="n">customerId</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="c1">// Service B - Same database!</span>
+<span class="nd">@Repository</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderRepositoryB</span> <span class="o">{</span>
+    <span class="nd">@Query</span><span class="o">(</span><span class="s">"SELECT o FROM Order o WHERE o.status = :status"</span><span class="o">)</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="nf">findByStatus</span><span class="o">(</span><span class="nc">OrderStatus</span> <span class="n">status</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="c1">// Solution: Service B should call Service A's API</span>
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServiceBOrderClient</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">RestTemplate</span> <span class="n">restTemplate</span><span class="o">;</span>
+    
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;</span> <span class="nf">getOrdersByStatus</span><span class="o">(</span><span class="nc">OrderStatus</span> <span class="n">status</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">restTemplate</span><span class="o">.</span><span class="na">getForObject</span><span class="o">(</span>
+            <span class="s">"http://order-service/orders?status="</span> <span class="o">+</span> <span class="n">status</span><span class="o">,</span>
+            <span class="nc">OrderList</span><span class="o">.</span><span class="na">class</span>
+        <span class="o">).</span><span class="na">getOrders</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="3-synchronous-chain">3. Synchronous Chain</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Anti-pattern: Long synchronous call chains
+
+Client → A → B → C → D → E
+         │   │   │   │   │
+         └───┴───┴───┴───┴── Total latency = sum of all
+
+Solution: Use async communication or aggregate service
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="interview-questions">Interview Questions</h2>
+
+<h3 id="conceptual-questions">Conceptual Questions</h3>
+<ol>
+  <li><strong>What are microservices and how do they differ from monolithic architecture?</strong></li>
+  <li><strong>What is Domain-Driven Design and how does it help in microservices?</strong></li>
+  <li><strong>Explain bounded context and its importance in microservices.</strong></li>
+  <li><strong>What are the trade-offs of microservices architecture?</strong></li>
+  <li><strong>How do you determine the right size for a microservice?</strong></li>
+</ol>
+
+<h3 id="design-questions">Design Questions</h3>
+<ol>
+  <li><strong>How would you decompose an e-commerce monolith into microservices?</strong></li>
+  <li><strong>What factors would you consider when defining service boundaries?</strong></li>
+  <li><strong>How do you handle data consistency across microservices?</strong></li>
+  <li><strong>Explain the Strangler Fig pattern and when to use it.</strong></li>
+  <li><strong>What is the database-per-service pattern and why is it important?</strong></li>
+</ol>
+
+<h3 id="practical-questions">Practical Questions</h3>
+<ol>
+  <li><strong>What are the challenges you’ve faced in microservices architecture?</strong></li>
+  <li><strong>How do you handle distributed transactions?</strong></li>
+  <li><strong>What strategies do you use for service-to-service communication?</strong></li>
+  <li><strong>How do you manage shared code across microservices?</strong></li>
+  <li><strong>What monitoring and observability practices do you follow?</strong></li>
+</ol>
+
+<hr />
+
+<h2 id="key-takeaways">Key Takeaways</h2>
+
+<ol>
+  <li><strong>Microservices trade application complexity for infrastructure complexity</strong></li>
+  <li><strong>Start with a modular monolith, decompose when needed</strong></li>
+  <li><strong>Use DDD to identify natural service boundaries</strong></li>
+  <li><strong>Each service should own its data completely</strong></li>
+  <li><strong>Prefer asynchronous communication over synchronous</strong></li>
+  <li><strong>Design for failure - services will fail</strong></li>
+  <li><strong>The right service size balances team autonomy with operational overhead</strong></li>
+  <li><strong>Avoid distributed monolith anti-pattern</strong></li>
+  <li><strong>Migration from monolith should be incremental (Strangler Fig)</strong></li>
+  <li><strong>Microservices require mature DevOps practices</strong></li>
+</ol>
+
+<hr />
+
+<p><em>Next: <a href="02-service-discovery.md">Service Discovery</a></em></p>
