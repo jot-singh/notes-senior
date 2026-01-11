@@ -294,27 +294,27 @@ public class UserService {
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
 │  ASSOCIATION (uses)                                              │
-│  ─────────────────>                                              │
+│  ClassA ─────────────────> ClassB                                │
 │  Class A uses Class B                                            │
 │                                                                  │
 │  AGGREGATION (has-a, weak)                                       │
-│  ────────────────◇                                               │
-│  Department has Employees (employees can exist independently)    │
+│  Department ◇────────── Employee                                 │
+│  Hollow diamond at container - parts can exist independently     │
 │                                                                  │
 │  COMPOSITION (has-a, strong)                                     │
-│  ────────────────◆                                               │
-│  House has Rooms (rooms cannot exist without house)              │
+│  House ◆────────── Room                                          │
+│  Filled diamond at container - parts cannot exist without whole  │
 │                                                                  │
 │  INHERITANCE (is-a)                                              │
-│  ────────────────▷                                               │
-│  Dog is an Animal                                                │
+│  Dog ────────────────▷ Animal                                    │
+│  Subclass extends base class                                     │
 │                                                                  │
 │  IMPLEMENTATION (implements)                                     │
-│  - - - - - - - -▷                                                │
-│  ArrayList implements List                                       │
+│  ArrayList - - - - - - - -▷ List                                 │
+│  Class implements interface                                      │
 │                                                                  │
 │  DEPENDENCY (temporary use)                                      │
-│  - - - - - - - ->                                                │
+│  ClassA - - - - - - - -> ClassB                                  │
 │  Class A temporarily uses Class B (method parameter)             │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
