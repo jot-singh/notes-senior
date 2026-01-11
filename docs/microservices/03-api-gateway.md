@@ -9,60 +9,52 @@ An API Gateway is a server that acts as a single entry point for all client requ
 
 ### The Problem Without Gateway
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                   WITHOUT API GATEWAY                                │
-│                                                                      │
-│     ┌─────────────────────────────────────────────────────────┐     │
-│     │                      CLIENT                              │     │
-│     └─────────────────────────────────────────────────────────┘     │
-│           │          │          │          │          │              │
-│           │          │          │          │          │              │
-│           ▼          ▼          ▼          ▼          ▼              │
-│      ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐        │
-│      │ User   │ │ Order  │ │Product │ │Payment │ │Shipping│        │
-│      │Service │ │Service │ │Service │ │Service │ │Service │        │
-│      └────────┘ └────────┘ └────────┘ └────────┘ └────────┘        │
-│                                                                      │
-│  Problems:                                                           │
-│  • Client needs to know all service URLs                            │
-│  • Cross-cutting concerns duplicated in each service                │
-│  • Protocol coupling (client must use each service's protocol)      │
-│  • Multiple round trips for composite data                          │
-│  • Security implementation scattered across services                 │
-│  • No centralized rate limiting or monitoring                       │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    Client["CLIENT"]
+    
+    US["User Service"]
+    OS["Order Service"]
+    PS["Product Service"]
+    PMS["Payment Service"]
+    SS["Shipping Service"]
+    
+    Client --> US
+    Client --> OS
+    Client --> PS
+    Client --> PMS
+    Client --> SS
+    
+    Problems["❌ Problems:<br/>• Client needs all service URLs<br/>• Cross-cutting concerns duplicated<br/>• Protocol coupling<br/>• Multiple round trips<br/>• Security scattered<br/>• No centralized rate limiting"]
+    
+    style Problems fill:#fcc,stroke:#333,stroke-width:2px
 ```
 
 ### The Solution With Gateway
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    WITH API GATEWAY                                  │
-│                                                                      │
-│     ┌─────────────────────────────────────────────────────────┐     │
-│     │                      CLIENT                              │     │
-│     └───────────────────────────┬─────────────────────────────┘     │
-│                                 │                                    │
-│                                 ▼                                    │
-│     ┌─────────────────────────────────────────────────────────┐     │
-│     │                    API GATEWAY                           │     │
-│     │  • Authentication & Authorization                        │     │
-│     │  • Rate Limiting & Throttling                           │     │
-│     │  • Request/Response Transformation                       │     │
-│     │  • Load Balancing                                        │     │
-│     │  • Caching                                               │     │
-│     │  • Monitoring & Logging                                  │     │
-│     │  • Circuit Breaking                                      │     │
-│     └───────────────────────────┬─────────────────────────────┘     │
-│           │          │          │          │          │              │
-│           ▼          ▼          ▼          ▼          ▼              │
-│      ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐        │
-│      │ User   │ │ Order  │ │Product │ │Payment │ │Shipping│        │
-│      │Service │ │Service │ │Service │ │Service │ │Service │        │
-│      └────────┘ └────────┘ └────────┘ └────────┘ └────────┘        │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    Client["CLIENT"]
+    
+    subgraph Gateway["API GATEWAY"]
+        Features["✅ Features:<br/>• Authentication & Authorization<br/>• Rate Limiting & Throttling<br/>• Request/Response Transformation<br/>• Load Balancing<br/>• Caching<br/>• Monitoring & Logging<br/>• Circuit Breaking"]
+    end
+    
+    US["User Service"]
+    OS["Order Service"]
+    PS["Product Service"]
+    PMS["Payment Service"]
+    SS["Shipping Service"]
+    
+    Client --> Gateway
+    Gateway --> US
+    Gateway --> OS
+    Gateway --> PS
+    Gateway --> PMS
+    Gateway --> SS
+    
+    style Gateway fill:#e1ffe1,stroke:#333,stroke-width:2px
+    style Features fill:#fff,stroke:#333,stroke-width:1px
 ```
 
 ---
@@ -71,22 +63,19 @@ An API Gateway is a server that acts as a single entry point for all client requ
 
 ### 1. Request Routing
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        REQUEST ROUTING                               │
-│                                                                      │
-│   /api/users/*     ──────────────────►  User Service                │
-│   /api/orders/*    ──────────────────►  Order Service               │
-│   /api/products/*  ──────────────────►  Product Service             │
-│   /api/v2/users/*  ──────────────────►  User Service v2             │
-│                                                                      │
-│   Routing Based On:                                                  │
-│   • Path patterns                                                    │
-│   • HTTP method                                                      │
-│   • Headers                                                          │
-│   • Query parameters                                                 │
-│   • Request body content                                             │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph Routing["REQUEST ROUTING"]
+        R1["/api/users/* → User Service"]
+        R2["/api/orders/* → Order Service"]
+        R3["/api/products/* → Product Service"]
+        R4["/api/v2/users/* → User Service v2"]
+        
+        Based["Routing Based On:<br/>• Path patterns<br/>• HTTP method<br/>• Headers<br/>• Query parameters<br/>• Request body content"]
+    end
+    
+    style Routing fill:#ffe1e1,stroke:#333,stroke-width:2px
+    style Based fill:#fff,stroke:#333,stroke-width:1px
 ```
 
 ```java

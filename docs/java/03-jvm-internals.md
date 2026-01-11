@@ -10,26 +10,33 @@ The JVM architecture consists of three main components: Class Loader Subsystem l
 
 ### JVM Memory Structure
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        JVM Memory                            │
-├─────────────────────────────────────────────────────────────┤
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │                    Heap (Shared)                      │   │
-│  │  ┌─────────────────┐  ┌───────────────────────────┐  │   │
-│  │  │   Young Gen     │  │       Old Gen             │  │   │
-│  │  │ ┌─────┬───────┐ │  │                           │  │   │
-│  │  │ │Eden │S0 │S1 │ │  │   Tenured Objects         │  │   │
-│  │  │ └─────┴───────┘ │  │                           │  │   │
-│  │  └─────────────────┘  └───────────────────────────┘  │   │
-│  └──────────────────────────────────────────────────────┘   │
-│  ┌──────────────────┐  ┌─────────────────────────────────┐  │
-│  │ Metaspace        │  │  Thread Stacks (per thread)    │  │
-│  │ (Class metadata) │  │  ┌─────┐ ┌─────┐ ┌─────┐       │  │
-│  └──────────────────┘  │  │Stack│ │Stack│ │Stack│       │  │
-│                        │  └─────┘ └─────┘ └─────┘       │  │
-│                        └─────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph JVM["JVM Memory"]
+        subgraph Heap["Heap (Shared)"]
+            subgraph YoungGen["Young Generation"]
+                Eden["Eden Space"]
+                S0["Survivor 0"]
+                S1["Survivor 1"]
+            end
+            
+            OldGen["Old Generation<br/>(Tenured Objects)"]
+        end
+        
+        Metaspace["Metaspace<br/>(Class metadata)"]
+        
+        subgraph Stacks["Thread Stacks<br/>(per thread)"]
+            Stack1["Stack 1"]
+            Stack2["Stack 2"]
+            Stack3["Stack 3"]
+        end
+    end
+    
+    style Heap fill:#ffe1e1,stroke:#333,stroke-width:2px
+    style YoungGen fill:#e1ffe1,stroke:#333,stroke-width:2px
+    style OldGen fill:#e1f5ff,stroke:#333,stroke-width:2px
+    style Metaspace fill:#fff3e1,stroke:#333,stroke-width:2px
+    style Stacks fill:#f3e1ff,stroke:#333,stroke-width:2px
 ```
 
 **Heap**: Shared memory for all objects and arrays. Divided into Young Generation (Eden + Survivor spaces) and Old Generation. Objects start in Eden, survive collections to Survivor spaces, eventually promote to Old Gen.

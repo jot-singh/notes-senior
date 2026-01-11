@@ -9,95 +9,83 @@ The Circuit Breaker pattern is a fault tolerance mechanism that prevents cascadi
 
 ### The Problem: Cascading Failures
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    CASCADING FAILURE SCENARIO                        │
-│                                                                      │
-│   Payment Service is slow/down                                       │
-│                                                                      │
-│   ┌────────┐     ┌────────┐     ┌────────┐     ┌────────┐          │
-│   │  Web   │────►│ Order  │────►│Payment │     │External│          │
-│   │  App   │     │Service │     │Service │──X──│Gateway │          │
-│   └────────┘     └────────┘     └────────┘     └────────┘          │
-│       │              │              │                               │
-│       │ Waiting      │ Waiting      │ Waiting                       │
-│       │              │              │                               │
-│       │ Threads      │ Threads      │ Threads                       │
-│       │ blocked      │ blocked      │ blocked                       │
-│       │              │              │                               │
-│       ▼              ▼              ▼                               │
-│   ┌────────┐     ┌────────┐     ┌────────┐                         │
-│   │ Thread │     │ Thread │     │ Thread │                         │
-│   │ Pool   │     │ Pool   │     │ Pool   │                         │
-│   │EXHAUSTED│    │EXHAUSTED│    │EXHAUSTED│                         │
-│   └────────┘     └────────┘     └────────┘                         │
-│                                                                      │
-│   Result: All services become unresponsive!                         │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+sequenceDiagram
+    participant Web as Web App
+    participant Order as Order Service
+    participant Payment as Payment Service
+    participant Gateway as External Gateway
+    
+    Note over Web,Gateway: CASCADING FAILURE SCENARIO<br/>Payment Service is slow/down
+    
+    Web->>Order: Request
+    Order->>Payment: Request
+    Payment-xGateway: X (Failed/Timeout)
+    
+    Note over Web: Threads<br/>blocked
+    Note over Order: Threads<br/>blocked
+    Note over Payment: Threads<br/>blocked
+    
+    Note over Web: Thread Pool<br/>EXHAUSTED
+    Note over Order: Thread Pool<br/>EXHAUSTED
+    Note over Payment: Thread Pool<br/>EXHAUSTED
+    
+    Note over Web,Gateway: ❌ Result: All services become unresponsive!
 ```
 
 ### The Solution: Circuit Breaker
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    WITH CIRCUIT BREAKER                              │
-│                                                                      │
-│   ┌────────┐     ┌────────────────────────┐     ┌────────┐         │
-│   │ Order  │────►│    Circuit Breaker     │────►│Payment │         │
-│   │Service │     │                        │     │Service │         │
-│   └────────┘     │  State: OPEN           │     └────────┘         │
-│       │          │                        │                         │
-│       │          │  ┌──────────────────┐  │                         │
-│       │          │  │ Fail Fast!       │  │                         │
-│       │          │  │ Return fallback  │  │                         │
-│       │          │  │ immediately      │  │                         │
-│       │          │  └──────────────────┘  │                         │
-│       │          │                        │                         │
-│       │          └────────────────────────┘                         │
-│       │                                                              │
-│       ▼                                                              │
-│   Return cached data or default response                            │
-│   Order Service stays responsive!                                   │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    Order[Order Service]
+    
+    subgraph CB["Circuit Breaker<br/>(State: OPEN)"]
+        FailFast["✅ Fail Fast!<br/>Return fallback<br/>immediately"]
+    end
+    
+    Payment[Payment Service]
+    Response["Return cached data<br/>or default response<br/><br/>✅ Order Service<br/>stays responsive!"]
+    
+    Order --> CB
+    CB -.->|Blocked| Payment
+    CB --> Response
+    
+    style CB fill:#e1ffe1,stroke:#333,stroke-width:2px
+    style FailFast fill:#fff,stroke:#333,stroke-width:1px
+    style Response fill:#e1f5ff,stroke:#333,stroke-width:2px
 ```
 
 ---
 
 ## Circuit Breaker States
 
+```mermaid
+stateDiagram-v2
+    [*] --> CLOSED
+    
+    CLOSED --> OPEN : Failures exceed threshold
+    OPEN --> HALF_OPEN : Timeout expires
+    HALF_OPEN --> CLOSED : Test request succeeds
+    HALF_OPEN --> OPEN : Test request fails
+    CLOSED --> CLOSED : Success resets counter
+    
+    state CLOSED {
+        [*] --> Normal
+        note right of Normal : Requests pass through<br/>Failures counted
+    }
+    
+    state OPEN {
+        [*] --> FailFast
+        note right of FailFast : Requests rejected immediately<br/>Return fallback response
+    }
+    
+    state HALF_OPEN {
+        [*] --> Testing
+        note right of Testing : Limited requests allowed<br/>Testing service health
+    }
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    CIRCUIT BREAKER STATE MACHINE                     │
-│                                                                      │
-│                                                                      │
-│   ┌─────────────┐                           ┌─────────────┐         │
-│   │             │    Failures exceed        │             │         │
-│   │   CLOSED    │    threshold              │    OPEN     │         │
-│   │             │ ─────────────────────────►│             │         │
-│   │  (Normal)   │                           │ (Fail Fast) │         │
-│   │             │                           │             │         │
-│   └──────┬──────┘                           └──────┬──────┘         │
-│          │                                         │                │
-│          │                                         │                │
-│          │ Success                                 │ Timeout        │
-│          │ resets                                  │ expires        │
-│          │ counter                                 │                │
-│          │                                         │                │
-│          │         ┌─────────────┐                 │                │
-│          │         │             │                 │                │
-│          └─────────│ HALF-OPEN   │◄────────────────┘                │
-│                    │             │                                   │
-│                    │  (Testing)  │                                   │
-│                    │             │                                   │
-│                    └──────┬──────┘                                   │
-│                           │                                          │
-│                           │ If test request                          │
-│                           │ succeeds → CLOSED                        │
-│                           │ fails → OPEN                             │
-│                                                                      │
-│   States:                                                            │
+
+**States:**
 │   • CLOSED: Normal operation, requests pass through                 │
 │   • OPEN: Circuit broken, requests fail immediately                 │
 │   • HALF-OPEN: Testing if service recovered                         │

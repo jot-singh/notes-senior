@@ -14,23 +14,34 @@ Microservices architecture is a design approach where an application is built as
 
 ### Monolithic Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    MONOLITHIC APPLICATION                    │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │   User UI   │  │  Admin UI   │  │    Reporting UI     │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │User Service │  │Order Service│  │  Inventory Service  │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
-├─────────────────────────────────────────────────────────────┤
-│                    Shared Database                           │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │   Users     │  │   Orders    │  │     Inventory       │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph MONOLITHIC_APP["MONOLITHIC APPLICATION"]
+        subgraph UI_LAYER["UI Layer"]
+            UserUI["User UI"]
+            AdminUI["Admin UI"]
+            ReportingUI["Reporting UI"]
+        end
+        
+        subgraph SERVICE_LAYER["Service Layer"]
+            UserService["User Service"]
+            OrderService["Order Service"]
+            InventoryService["Inventory Service"]
+        end
+        
+        subgraph DATABASE["Shared Database"]
+            Users["Users Table"]
+            Orders["Orders Table"]
+            Inventory["Inventory Table"]
+        end
+    end
+    
+    UserUI --> UserService
+    AdminUI --> OrderService
+    ReportingUI --> InventoryService
+    UserService --> Users
+    OrderService --> Orders
+    InventoryService --> Inventory
 ```
 
 **Characteristics:**
@@ -56,27 +67,38 @@ Microservices architecture is a design approach where an application is built as
 
 ### Microservices Architecture
 
-```
-┌──────────────────────────────────────────────────────────────────────────┐
-│                              API GATEWAY                                  │
-└─────────────────────────────────┬────────────────────────────────────────┘
-                                  │
-        ┌─────────────────────────┼─────────────────────────┐
-        │                         │                         │
-        ▼                         ▼                         ▼
-┌───────────────┐         ┌───────────────┐         ┌───────────────┐
-│ User Service  │         │ Order Service │         │Inventory Svc  │
-│   (Node.js)   │         │    (Java)     │         │   (Python)    │
-├───────────────┤         ├───────────────┤         ├───────────────┤
-│   MongoDB     │         │  PostgreSQL   │         │     Redis     │
-└───────────────┘         └───────────────┘         └───────────────┘
-        │                         │                         │
-        └─────────────────────────┼─────────────────────────┘
-                                  │
-                    ┌─────────────┴─────────────┐
-                    │      Message Broker       │
-                    │     (Kafka/RabbitMQ)      │
-                    └───────────────────────────┘
+```mermaid
+graph TB
+    Gateway["API GATEWAY"]
+    
+    subgraph UserSvc["User Service (Node.js)"]
+        UserApp["Application"]
+        UserDB[("MongoDB")]
+    end
+    
+    subgraph OrderSvc["Order Service (Java)"]
+        OrderApp["Application"]
+        OrderDB[("PostgreSQL")]
+    end
+    
+    subgraph InventorySvc["Inventory Service (Python)"]
+        InventoryApp["Application"]
+        InventoryDB[("Redis")]
+    end
+    
+    MessageBroker["Message Broker<br/>(Kafka/RabbitMQ)"]
+    
+    Gateway --> UserApp
+    Gateway --> OrderApp
+    Gateway --> InventoryApp
+    
+    UserApp --> UserDB
+    OrderApp --> OrderDB
+    InventoryApp --> InventoryDB
+    
+    UserApp --> MessageBroker
+    OrderApp --> MessageBroker
+    InventoryApp --> MessageBroker
 ```
 
 **Characteristics:**
@@ -127,30 +149,45 @@ A service boundary defines the scope and responsibility of a microservice. It de
 
 ### Domain-Driven Design (DDD) Approach
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         E-COMMERCE DOMAIN                            │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐    │
-│  │ Customer        │   │ Order           │   │ Inventory       │    │
-│  │ Bounded Context │   │ Bounded Context │   │ Bounded Context │    │
-│  │                 │   │                 │   │                 │    │
-│  │ • Customer      │   │ • Order         │   │ • Product       │    │
-│  │ • Address       │   │ • OrderLine     │   │ • Stock         │    │
-│  │ • Preferences   │   │ • Payment       │   │ • Warehouse     │    │
-│  └─────────────────┘   └─────────────────┘   └─────────────────┘    │
-│                                                                      │
-│  ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐    │
-│  │ Shipping        │   │ Notification    │   │ Analytics       │    │
-│  │ Bounded Context │   │ Bounded Context │   │ Bounded Context │    │
-│  │                 │   │                 │   │                 │    │
-│  │ • Shipment      │   │ • Email         │   │ • Events        │    │
-│  │ • Carrier       │   │ • SMS           │   │ • Reports       │    │
-│  │ • Tracking      │   │ • Push          │   │ • Dashboards    │    │
-│  └─────────────────┘   └─────────────────┘   └─────────────────┘    │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph ECOMMERCE["E-COMMERCE DOMAIN"]
+        subgraph Customer["Customer<br/>Bounded Context"]
+            C1["• Customer"]
+            C2["• Address"]
+            C3["• Preferences"]
+        end
+        
+        subgraph Order["Order<br/>Bounded Context"]
+            O1["• Order"]
+            O2["• OrderLine"]
+            O3["• Payment"]
+        end
+        
+        subgraph Inventory["Inventory<br/>Bounded Context"]
+            I1["• Product"]
+            I2["• Stock"]
+            I3["• Warehouse"]
+        end
+        
+        subgraph Shipping["Shipping<br/>Bounded Context"]
+            S1["• Shipment"]
+            S2["• Carrier"]
+            S3["• Tracking"]
+        end
+        
+        subgraph Notification["Notification<br/>Bounded Context"]
+            N1["• Email"]
+            N2["• SMS"]
+            N3["• Push"]
+        end
+        
+        subgraph Analytics["Analytics<br/>Bounded Context"]
+            A1["• Events"]
+            A2["• Reports"]
+            A3["• Dashboards"]
+        end
+    end
 ```
 
 ### Key DDD Concepts

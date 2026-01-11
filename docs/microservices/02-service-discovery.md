@@ -14,41 +14,34 @@ In a microservices environment:
 - Services can have multiple instances
 - Manual configuration doesn't scale
 
-```
-Traditional Approach (Doesn't Scale):
-┌─────────────────────────────────────────────────────────┐
-│ application.properties                                  │
-├─────────────────────────────────────────────────────────┤
-│ user-service.url=http://192.168.1.10:8080              │
-│ order-service.url=http://192.168.1.11:8081             │
-│ payment-service.url=http://192.168.1.12:8082           │
-└─────────────────────────────────────────────────────────┘
-         │
-         ▼
-    What happens when:
-    • Services restart with new IPs?
-    • New instances are added?
-    • Services are deployed to new hosts?
-    • Auto-scaling kicks in?
+```mermaid
+flowchart TD
+    Config["application.properties<br/>━━━━━━━━━━━━━━━━━━<br/>user-service.url=http://192.168.1.10:8080<br/>order-service.url=http://192.168.1.11:8081<br/>payment-service.url=http://192.168.1.12:8082"]
+    
+    Problems["❌ Problems:<br/>• Services restart with new IPs?<br/>• New instances added?<br/>• Services deployed to new hosts?<br/>• Auto-scaling kicks in?"]
+    
+    Config --> Problems
+    
+    style Config fill:#f9f,stroke:#333,stroke-width:2px
+    style Problems fill:#fcc,stroke:#333,stroke-width:2px
 ```
 
 ### The Solution
 
-```
-Service Discovery Approach:
-┌──────────────────────────────────────────────────────────────────┐
-│                      SERVICE REGISTRY                             │
-│  ┌─────────────────────────────────────────────────────────────┐ │
-│  │ user-service    → [192.168.1.10:8080, 192.168.1.11:8080]   │ │
-│  │ order-service   → [192.168.1.20:8081, 192.168.1.21:8081]   │ │
-│  │ payment-service → [192.168.1.30:8082]                       │ │
-│  └─────────────────────────────────────────────────────────────┘ │
-└──────────────────────────────────────────────────────────────────┘
-        ▲ Register                    │ Discover
-        │                             ▼
-   ┌─────────┐                  ┌─────────┐
-   │ Service │                  │ Client  │
-   └─────────┘                  └─────────┘
+```mermaid
+flowchart TB
+    subgraph Registry["SERVICE REGISTRY"]
+        Mappings["user-service → [192.168.1.10:8080, 192.168.1.11:8080]<br/>order-service → [192.168.1.20:8081, 192.168.1.21:8081]<br/>payment-service → [192.168.1.30:8082]"]
+    end
+    
+    Service["Service Instance"]
+    Client["Client Service"]
+    
+    Service -->|Register| Registry
+    Registry -->|Discover| Client
+    
+    style Registry fill:#e1f5ff,stroke:#333,stroke-width:2px
+    style Mappings fill:#fff,stroke:#333,stroke-width:1px
 ```
 
 ---
@@ -57,31 +50,25 @@ Service Discovery Approach:
 
 ### Client-Side Discovery
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                     CLIENT-SIDE DISCOVERY                            │
-│                                                                      │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │                    SERVICE REGISTRY                           │   │
-│  │            (Eureka, Consul, Zookeeper)                       │   │
-│  └─────────────────────────┬────────────────────────────────────┘   │
-│                            │                                         │
-│           ┌────────────────┼────────────────┐                       │
-│           │ 1. Query       │                │ 2. Register           │
-│           ▼                │                ▼                       │
-│     ┌──────────┐           │          ┌──────────┐                  │
-│     │  Client  │           │          │ Service  │                  │
-│     │ Service  │           │          │ Instance │                  │
-│     └────┬─────┘           │          └──────────┘                  │
-│          │                 │          ┌──────────┐                  │
-│          │ 3. Direct       │          │ Service  │                  │
-│          │    Call         │          │ Instance │                  │
-│          │    (Load        │          └──────────┘                  │
-│          │    Balanced)    │          ┌──────────┐                  │
-│          └─────────────────┼─────────►│ Service  │                  │
-│                            │          │ Instance │                  │
-│                            │          └──────────┘                  │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    Registry["SERVICE REGISTRY<br/>(Eureka, Consul, Zookeeper)"]
+    
+    Client["Client Service"]
+    SI1["Service Instance 1"]
+    SI2["Service Instance 2"]
+    SI3["Service Instance 3"]
+    
+    SI1 -->|2. Register| Registry
+    SI2 -->|2. Register| Registry
+    SI3 -->|2. Register| Registry
+    
+    Registry -->|1. Query| Client
+    Client -->|3. Direct Call<br/>(Load Balanced)| SI1
+    Client -.->|3. Direct Call<br/>(Load Balanced)| SI2
+    Client -.->|3. Direct Call<br/>(Load Balanced)| SI3
+    
+    style Registry fill:#e1f5ff,stroke:#333,stroke-width:2px
 ```
 
 **How it works:**
@@ -154,31 +141,28 @@ public interface UserServiceClient {
 
 ### Server-Side Discovery
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                     SERVER-SIDE DISCOVERY                            │
-│                                                                      │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │                    SERVICE REGISTRY                           │   │
-│  └─────────────────────────┬────────────────────────────────────┘   │
-│                            │                                         │
-│                            │ 2. Discover                            │
-│                            ▼                                         │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │              LOAD BALANCER / API GATEWAY                      │   │
-│  │              (AWS ALB, Kubernetes Service, Nginx)             │   │
-│  └──────────────────────────┬───────────────────────────────────┘   │
-│             ▲                │                                       │
-│  1. Request │                │ 3. Route                              │
-│             │                ▼                                       │
-│     ┌──────────┐       ┌──────────┐ ┌──────────┐ ┌──────────┐      │
-│     │  Client  │       │ Service  │ │ Service  │ │ Service  │      │
-│     │ Service  │       │ Inst 1   │ │ Inst 2   │ │ Inst 3   │      │
-│     └──────────┘       └──────────┘ └──────────┘ └──────────┘      │
-│                               │           │           │              │
-│                               └───────────┼───────────┘              │
-│                                  4. Register                         │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    Registry["SERVICE REGISTRY"]
+    LB["LOAD BALANCER / API GATEWAY<br/>(AWS ALB, Kubernetes Service, Nginx)"]
+    Client["Client Service"]
+    
+    SI1["Service Instance 1"]
+    SI2["Service Instance 2"]
+    SI3["Service Instance 3"]
+    
+    SI1 -->|4. Register| Registry
+    SI2 -->|4. Register| Registry
+    SI3 -->|4. Register| Registry
+    
+    Registry -->|2. Discover| LB
+    Client -->|1. Request| LB
+    LB -->|3. Route| SI1
+    LB -.->|3. Route| SI2
+    LB -.->|3. Route| SI3
+    
+    style Registry fill:#e1f5ff,stroke:#333,stroke-width:2px
+    style LB fill:#ffe1f5,stroke:#333,stroke-width:2px
 ```
 
 **How it works:**

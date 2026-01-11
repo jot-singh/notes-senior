@@ -9,73 +9,57 @@ A Service Mesh is a dedicated infrastructure layer that handles service-to-servi
 
 ### The Problem
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│              WITHOUT SERVICE MESH - Library Approach                 │
-│                                                                      │
-│   Each service implements cross-cutting concerns:                    │
-│                                                                      │
-│   ┌─────────────────────────────┐  ┌─────────────────────────────┐  │
-│   │     Service A (Java)        │  │     Service B (Python)      │  │
-│   ├─────────────────────────────┤  ├─────────────────────────────┤  │
-│   │ • Circuit Breaker (Hystrix) │  │ • Circuit Breaker (pybreak) │  │
-│   │ • Service Discovery         │  │ • Service Discovery          │  │
-│   │ • Load Balancing            │  │ • Load Balancing             │  │
-│   │ • mTLS                      │  │ • mTLS                       │  │
-│   │ • Retry Logic               │  │ • Retry Logic                │  │
-│   │ • Tracing                   │  │ • Tracing                    │  │
-│   │ • Metrics                   │  │ • Metrics                    │  │
-│   ├─────────────────────────────┤  ├─────────────────────────────┤  │
-│   │     Business Logic          │  │     Business Logic           │  │
-│   └─────────────────────────────┘  └─────────────────────────────┘  │
-│                                                                      │
-│   Problems:                                                          │
-│   • Duplicated effort per service/language                          │
-│   • Inconsistent implementations                                     │
-│   • Library version management                                       │
-│   • Application code changes required                               │
-│   • Hard to enforce policies consistently                           │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph WithoutMesh["WITHOUT SERVICE MESH - Library Approach"]
+        subgraph SA["Service A (Java)"]
+            SAL["Business Logic"]
+            SAF["• Circuit Breaker (Hystrix)<br/>• Service Discovery<br/>• Load Balancing<br/>• mTLS<br/>• Retry Logic<br/>• Tracing<br/>• Metrics"]
+            SAF --> SAL
+        end
+        
+        subgraph SB["Service B (Python)"]
+            SBL["Business Logic"]
+            SBF["• Circuit Breaker (pybreak)<br/>• Service Discovery<br/>• Load Balancing<br/>• mTLS<br/>• Retry Logic<br/>• Tracing<br/>• Metrics"]
+            SBF --> SBL
+        end
+        
+        Problems["❌ Problems:<br/>• Duplicated effort per service/language<br/>• Inconsistent implementations<br/>• Library version management<br/>• Application code changes required<br/>• Hard to enforce policies consistently"]
+    end
+    
+    style WithoutMesh fill:#fcc,stroke:#333,stroke-width:2px
+    style Problems fill:#fff,stroke:#333,stroke-width:1px
 ```
 
 ### The Solution
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    WITH SERVICE MESH                                 │
-│                                                                      │
-│   Cross-cutting concerns handled by mesh:                            │
-│                                                                      │
-│   ┌───────────────────────────────────────────────────────────────┐ │
-│   │                      CONTROL PLANE                             │ │
-│   │              (Istio, Linkerd, Consul Connect)                  │ │
-│   │  • Configuration Management  • Certificate Management          │ │
-│   │  • Service Discovery         • Policy Enforcement              │ │
-│   └───────────────────────────────────────────────────────────────┘ │
-│                              │                                       │
-│              ┌───────────────┴───────────────┐                      │
-│              │         DATA PLANE            │                      │
-│              │        (Sidecar Proxies)      │                      │
-│              └───────────────────────────────┘                      │
-│                                                                      │
-│   ┌──────────────────────┐    ┌──────────────────────┐             │
-│   │  ┌───────────────┐   │    │  ┌───────────────┐   │             │
-│   │  │ Service A     │   │    │  │ Service B     │   │             │
-│   │  │ (Pure Logic)  │   │    │  │ (Pure Logic)  │   │             │
-│   │  └───────┬───────┘   │    │  └───────┬───────┘   │             │
-│   │          │           │    │          │           │             │
-│   │  ┌───────┴───────┐   │    │  ┌───────┴───────┐   │             │
-│   │  │ Sidecar Proxy │◄──┼────┼──►│ Sidecar Proxy │   │             │
-│   │  │ (Envoy)       │   │    │  │ (Envoy)       │   │             │
-│   │  └───────────────┘   │    │  └───────────────┘   │             │
-│   └──────────────────────┘    └──────────────────────┘             │
-│                                                                      │
-│   Benefits:                                                          │
-│   • Language agnostic                                               │
-│   • No application code changes                                     │
-│   • Consistent policies                                             │
-│   • Centralized management                                          │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph WithMesh["WITH SERVICE MESH"]
+        ControlPlane["CONTROL PLANE<br/>(Istio, Linkerd, Consul Connect)<br/>━━━━━━━━━━━━━━━━━━━━━━<br/>• Configuration Management<br/>• Certificate Management<br/>• Service Discovery<br/>• Policy Enforcement"]
+        
+        ControlPlane --> DataPlane["DATA PLANE<br/>(Sidecar Proxies)"]
+        
+        subgraph Pod1["Pod"]
+            SA["Service A<br/>(Pure Logic)"]
+            Proxy1["Sidecar Proxy<br/>(Envoy)"]
+            SA --> Proxy1
+        end
+        
+        subgraph Pod2["Pod"]
+            SB["Service B<br/>(Pure Logic)"]
+            Proxy2["Sidecar Proxy<br/>(Envoy)"]
+            SB --> Proxy2
+        end
+        
+        Proxy1 <-->|mTLS, Retry,<br/>Circuit Breaking| Proxy2
+        
+        Benefits["✅ Benefits:<br/>• Language agnostic<br/>• No application code changes<br/>• Consistent policies<br/>• Centralized management"]
+    end
+    
+    style WithMesh fill:#e1ffe1,stroke:#333,stroke-width:2px
+    style ControlPlane fill:#e1f5ff,stroke:#333,stroke-width:2px
+    style Benefits fill:#fff,stroke:#333,stroke-width:1px
 ```
 
 ---

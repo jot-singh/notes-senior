@@ -9,34 +9,34 @@ Event-Driven Architecture (EDA) is a design paradigm where the flow of the progr
 
 ### What is an Event?
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         EVENT STRUCTURE                              │
-│                                                                      │
-│  {                                                                   │
-│    "eventId": "evt_123456789",                                      │
-│    "eventType": "OrderCreated",                                     │
-│    "timestamp": "2024-01-15T10:30:00Z",                             │
-│    "version": "1.0",                                                │
-│    "source": "order-service",                                       │
-│    "correlationId": "corr_987654321",                               │
-│    "data": {                                                        │
-│      "orderId": "ord_123",                                          │
-│      "customerId": "cust_456",                                      │
-│      "items": [...],                                                │
-│      "totalAmount": 150.00                                          │
-│    },                                                               │
-│    "metadata": {                                                    │
-│      "userId": "user_789",                                          │
-│      "traceId": "trace_abc123"                                      │
-│    }                                                                │
-│  }                                                                  │
-│                                                                      │
-│  Event Types:                                                        │
-│  • Domain Events: Business-relevant state changes                   │
-│  • Integration Events: Cross-service communication                  │
-│  • System Events: Infrastructure/operational events                 │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph EventData["EVENT STRUCTURE"]
+        JSON["<pre>{
+  'eventId': 'evt_123456789',
+  'eventType': 'OrderCreated',
+  'timestamp': '2024-01-15T10:30:00Z',
+  'version': '1.0',
+  'source': 'order-service',
+  'correlationId': 'corr_987654321',
+  'data': {
+    'orderId': 'ord_123',
+    'customerId': 'cust_456',
+    'items': [...],
+    'totalAmount': 150.00
+  },
+  'metadata': {
+    'userId': 'user_789',
+    'traceId': 'trace_abc123'
+  }
+}</pre>"]
+        
+        Types["Event Types:<br/>• Domain Events: Business state changes<br/>• Integration Events: Cross-service comm<br/>• System Events: Infrastructure events"]
+    end
+    
+    style EventData fill:#e1f5ff,stroke:#333,stroke-width:2px
+    style JSON fill:#fff,stroke:#333,stroke-width:1px,text-align:left
+    style Types fill:#ffe1e1,stroke:#333,stroke-width:1px
 ```
 
 ```java
@@ -97,38 +97,30 @@ public class CloudEvent<T> {
 
 ### Event-Driven vs Request-Driven
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    REQUEST-DRIVEN (Synchronous)                      │
-│                                                                      │
-│   Service A                     Service B                            │
-│      │                              │                                │
-│      │  ────── Request ──────────► │                                │
-│      │         (Blocked)            │                                │
-│      │ ◄───── Response ──────────  │                                │
-│      │                              │                                │
-│   • Tight coupling                                                   │
-│   • Caller waits for response                                        │
-│   • Cascading failures                                               │
-│   • Simple to understand                                             │
-│                                                                      │
-├─────────────────────────────────────────────────────────────────────┤
-│                    EVENT-DRIVEN (Asynchronous)                       │
-│                                                                      │
-│   Service A         Event Bus           Service B                    │
-│      │                  │                   │                        │
-│      │ ─── Event ────► │                   │                        │
-│      │   (Fire & Forget)│ ─── Event ────►  │                        │
-│      │                  │                   │                        │
-│      │                  │                   │  Process               │
-│      │                  │                   │  Asynchronously        │
-│      │                  │                   │                        │
-│   • Loose coupling                                                   │
-│   • Producer doesn't wait                                            │
-│   • Independent scaling                                              │
-│   • Eventual consistency                                             │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+sequenceDiagram
+    participant SA as Service A
+    participant SB as Service B
+    
+    Note over SA,SB: REQUEST-DRIVEN (Synchronous)
+    SA->>+SB: Request (Blocked)
+    SB-->>-SA: Response
+    
+    Note over SA,SB: • Tight coupling<br/>• Caller waits for response<br/>• Cascading failures<br/>• Simple to understand
+
+---
+
+sequenceDiagram
+    participant SA as Service A
+    participant EB as Event Bus
+    participant SB as Service B
+    
+    Note over SA,SB: EVENT-DRIVEN (Asynchronous)
+    SA->>EB: Event (Fire & Forget)
+    EB->>SB: Event
+    Note over SB: Process<br/>Asynchronously
+    
+    Note over SA,SB: • Loose coupling<br/>• Producer doesn't wait<br/>• Independent scaling<br/>• Eventual consistency
 ```
 
 ---
@@ -137,29 +129,21 @@ public class CloudEvent<T> {
 
 ### 1. Event Notification
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                      EVENT NOTIFICATION                              │
-│                                                                      │
-│   Publisher doesn't know/care about subscribers                      │
-│                                                                      │
-│   Order Service              Event Bus              Other Services   │
-│        │                         │                        │          │
-│        │  OrderCreated           │                        │          │
-│        │  {orderId: "123"}       │                        │          │
-│        │ ──────────────────────► │                        │          │
-│        │                         │ ─────────────────────► │          │
-│        │                         │                        │          │
-│                                                                      │
-│   Notification contains minimal data                                 │
-│   Subscribers fetch full data if needed                             │
-│                                                                      │
-│   Pros:                          Cons:                               │
-│   • Simple events               • Extra calls for data              │
-│   • Small payload               • Requires API availability         │
-│   • Loose coupling              • Higher latency                    │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+sequenceDiagram
+    participant OS as Order Service
+    participant EB as Event Bus
+    participant Other as Other Services
+    
+    Note over OS,Other: Publisher doesn't know/care about subscribers
+    
+    OS->>EB: OrderCreated<br/>{orderId: "123"}
+    EB->>Other: Forward Event
+    
+    Note over OS,Other: Notification contains minimal data<br/>Subscribers fetch full data if needed
+    
+    Note left of OS: ✅ Pros:<br/>• Simple events<br/>• Small payload<br/>• Loose coupling
+    Note right of Other: ❌ Cons:<br/>• Extra calls for data<br/>• Requires API availability<br/>• Higher latency
 ```
 
 ```java
@@ -202,16 +186,19 @@ public class ShippingEventHandler {
 │        │    customer: {...},     │                        │          │
 │        │    items: [...],        │                        │          │
 │        │    total: 150.00        │                        │          │
-│        │  }                      │                        │          │
-│        │ ──────────────────────► │                        │          │
-│        │                         │ ─────────────────────► │          │
-│                                                                      │
-│   Pros:                          Cons:                               │
-│   • No additional calls         • Larger payloads                   │
-│   • Better availability         • Data duplication                  │
-│   • Lower latency               • Version management                │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+sequenceDiagram
+    participant OS as Order Service
+    participant EB as Event Bus
+    participant Other as Other Services
+    
+    Note over OS,Other: Events carry all necessary data
+    
+    OS->>EB: OrderCreatedFull<br/>{<br/>orderId, customer,<br/>items, address,<br/>totalAmount, etc<br/>}
+    EB->>Other: Forward Complete Event
+    
+    Note left of OS: ✅ Pros:<br/>• No additional calls<br/>• Better availability<br/>• Lower latency
+    Note right of Other: ❌ Cons:<br/>• Larger payloads<br/>• Data duplication<br/>• Version management
 ```
 
 ```java
@@ -247,33 +234,27 @@ public class ShippingEventHandler {
 
 ### 3. Event Sourcing
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                       EVENT SOURCING                                 │
-│                                                                      │
-│   State is derived from sequence of events                           │
-│                                                                      │
-│   Event Store (Source of Truth):                                     │
-│   ┌─────────────────────────────────────────────────────────────┐   │
-│   │ Event 1: OrderCreated {orderId: "123", items: [...]}        │   │
-│   │ Event 2: ItemAdded {orderId: "123", item: {...}}            │   │
-│   │ Event 3: ItemRemoved {orderId: "123", itemId: "456"}        │   │
-│   │ Event 4: OrderConfirmed {orderId: "123"}                    │   │
-│   │ Event 5: PaymentReceived {orderId: "123", amount: 150}      │   │
-│   │ Event 6: OrderShipped {orderId: "123", trackingId: "..."}   │   │
-│   └─────────────────────────────────────────────────────────────┘   │
-│                            │                                         │
-│                            │ Replay events                           │
-│                            ▼                                         │
-│   Current State: Order {                                             │
-│     id: "123",                                                       │
-│     status: SHIPPED,                                                 │
-│     items: [...],                                                    │
-│     total: 150,                                                      │
-│     trackingId: "..."                                                │
-│   }                                                                  │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph EventStore["EVENT STORE (Source of Truth)"]
+        E1["Event 1: OrderCreated {orderId: '123', items: [...]}"]
+        E2["Event 2: ItemAdded {orderId: '123', item: {...}}"]
+        E3["Event 3: ItemRemoved {orderId: '123', itemId: '456'}"]
+        E4["Event 4: OrderConfirmed {orderId: '123'}"]
+        E5["Event 5: PaymentReceived {orderId: '123', amount: 150}"]
+        E6["Event 6: OrderShipped {orderId: '123', trackingId: '...'}"]
+        
+        E1 --> E2 --> E3 --> E4 --> E5 --> E6
+    end
+    
+    CurrentState["Current State: Order {<br/>id: '123',<br/>status: SHIPPED,<br/>items: [...],<br/>total: 150,<br/>trackingId: '...'<br/>}"]
+    
+    E6 -->|Replay events| CurrentState
+    
+    Note["State is derived from sequence of events"]
+    
+    style EventStore fill:#e1f5ff,stroke:#333,stroke-width:2px
+    style CurrentState fill:#e1ffe1,stroke:#333,stroke-width:2px
 ```
 
 ```java

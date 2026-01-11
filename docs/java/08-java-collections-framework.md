@@ -8,25 +8,56 @@ The Java Collections Framework provides unified architecture for storing, manipu
 
 ### Collection Hierarchy
 
-```
-                    Iterable
-                       │
-                   Collection
-           ┌───────────┼───────────┐
-          List        Set        Queue
-           │           │           │
-    ┌──────┼──────┐    │      ┌────┼────┐
-ArrayList LinkedList  │   PriorityQueue Deque
-                   ┌──┴──┐              │
-                HashSet TreeSet    ArrayDeque
-                   │
-             LinkedHashSet
-
-                    Map
-           ┌────────┼────────┐
-        HashMap  TreeMap  LinkedHashMap
-           │
-    ConcurrentHashMap
+```mermaid
+graph TB
+    Iterable["Iterable"]
+    
+    Collection["Collection"]
+    Iterable --> Collection
+    
+    List["List"]
+    Set["Set"]
+    Queue["Queue"]
+    
+    Collection --> List
+    Collection --> Set
+    Collection --> Queue
+    
+    ArrayList["ArrayList"]
+    LinkedList["LinkedList"]
+    List --> ArrayList
+    List --> LinkedList
+    
+    HashSet["HashSet"]
+    TreeSet["TreeSet"]
+    LinkedHashSet["LinkedHashSet"]
+    
+    Set --> HashSet
+    Set --> TreeSet
+    HashSet --> LinkedHashSet
+    
+    PriorityQueue["PriorityQueue"]
+    Deque["Deque"]
+    ArrayDeque["ArrayDeque"]
+    
+    Queue --> PriorityQueue
+    Queue --> Deque
+    Deque --> ArrayDeque
+    
+    Map["Map"]
+    HashMap["HashMap"]
+    TreeMap["TreeMap"]
+    LinkedHashMap["LinkedHashMap"]
+    ConcurrentHashMap["ConcurrentHashMap"]
+    
+    Map --> HashMap
+    Map --> TreeMap
+    Map --> LinkedHashMap
+    HashMap --> ConcurrentHashMap
+    
+    style Iterable fill:#e1f5ff,stroke:#333,stroke-width:2px
+    style Collection fill:#ffe1e1,stroke:#333,stroke-width:2px
+    style Map fill:#e1ffe1,stroke:#333,stroke-width:2px
 ```
 
 ### List Implementations

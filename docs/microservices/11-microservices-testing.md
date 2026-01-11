@@ -7,38 +7,27 @@ Testing microservices is more complex than testing monoliths due to distributed 
 
 ## Testing Pyramid for Microservices
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    TESTING PYRAMID                                   │
-│                                                                      │
-│                          ▲                                          │
-│                         /│\                                         │
-│                        / │ \          E2E Tests                     │
-│                       /  │  \         (Few, Slow, Expensive)        │
-│                      /   │   \        Test full user journeys       │
-│                     /    │    \                                     │
-│                    ───────────────                                  │
-│                   /      │      \     Component/Integration         │
-│                  /       │       \    Tests (Medium)                │
-│                 /        │        \   Test service with deps        │
-│                /         │         \                                │
-│               /          │          \                               │
-│              ─────────────────────────                              │
-│             /            │            \   Contract Tests            │
-│            /             │             \  (API compatibility)       │
-│           ─────────────────────────────────                         │
-│          /               │               \   Unit Tests             │
-│         /                │                \  (Many, Fast, Cheap)    │
-│        /                 │                 \ Test business logic    │
-│       ─────────────────────────────────────────                     │
-│                                                                      │
-│   Coverage Goals:                                                   │
-│   • Unit Tests: 70-80%                                              │
-│   • Integration Tests: 15-20%                                       │
-│   • Contract Tests: 5-10%                                           │
-│   • E2E Tests: 1-5%                                                 │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph Pyramid["TESTING PYRAMID"]
+        E2E["▲<br/>E2E Tests<br/>(Few, Slow, Expensive)<br/>Test full user journeys"]
+        
+        Component["Component/Integration Tests<br/>(Medium)<br/>Test service with deps"]
+        
+        Contract["Contract Tests<br/>(API compatibility)"]
+        
+        Unit["Unit Tests<br/>(Many, Fast, Cheap)<br/>Test business logic"]
+        
+        E2E --> Component --> Contract --> Unit
+        
+        Goals["Coverage Goals:<br/>• Unit Tests: 70-80%<br/>• Integration Tests: 15-20%<br/>• Contract Tests: 5-10%<br/>• E2E Tests: 1-5%"]
+    end
+    
+    style E2E fill:#fcc,stroke:#333,stroke-width:2px
+    style Component fill:#fc9,stroke:#333,stroke-width:2px
+    style Contract fill:#ff9,stroke:#333,stroke-width:2px
+    style Unit fill:#cfc,stroke:#333,stroke-width:2px
+    style Pyramid fill:#e1f5ff,stroke:#333,stroke-width:2px
 ```
 
 ---
