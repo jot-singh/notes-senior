@@ -9,61 +9,51 @@ Distributed tracing is a method for tracking requests as they flow through distr
 
 ### The Problem
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    DEBUGGING WITHOUT TRACING                         │
-│                                                                      │
-│   User reports: "Order checkout is slow"                            │
-│                                                                      │
-│   Request flow (unknown):                                            │
-│   Client → ??? → ??? → ??? → ??? → Response                         │
-│                                                                      │
-│   Questions:                                                         │
-│   • Which service is slow?                                          │
-│   • What's the call sequence?                                       │
-│   • How long does each step take?                                   │
-│   • Are there any errors?                                           │
-│   • How many downstream calls are made?                             │
-│                                                                      │
-│   Traditional logs:                                                  │
-│   [Order-Service] 10:30:00 Processing order 123                     │
-│   [User-Service]  10:30:00 Fetching user 456                        │
-│   [Payment-Svc]   10:30:01 Processing payment                       │
-│   [Inventory-Svc] 10:30:00 Checking stock                           │
-│                                                                      │
-│   Problem: Logs are disconnected, no correlation!                   │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    Problem["DEBUGGING WITHOUT TRACING<br/>━━━━━━━━━━━━━━━━━━━━<br/>User reports: 'Order checkout is slow'"]
+    
+    Flow["Request flow (unknown):<br/>Client → ??? → ??? → ??? → ??? → Response"]
+    
+    Questions["❓ Questions:<br/>• Which service is slow?<br/>• What's the call sequence?<br/>• How long does each step take?<br/>• Are there any errors?<br/>• How many downstream calls?"]
+    
+    Logs["Traditional logs:<br/>[Order-Service] 10:30:00 Processing order 123<br/>[User-Service] 10:30:00 Fetching user 456<br/>[Payment-Svc] 10:30:01 Processing payment<br/>[Inventory-Svc] 10:30:00 Checking stock"]
+    
+    Issue["❌ Problem: Logs are disconnected,<br/>no correlation!"]
+    
+    Problem --> Flow --> Questions --> Logs --> Issue
+    
+    style Problem fill:#fcc,stroke:#333,stroke-width:2px
+    style Issue fill:#f99,stroke:#333,stroke-width:2px
 ```
 
 ### The Solution
 
+```mermaid
+gantt
+    title DEBUGGING WITH TRACING (Trace ID: abc-123-xyz)
+    dateFormat X
+    axisFormat %Lms
+    
+    section API Gateway
+    Span 1 :0, 100
+    
+    section Order Service
+    Span 2 :0, 80
+    
+    section User Service
+    Span 3 :10, 25
+    
+    section Inventory
+    Span 4 :30, 50
+    Database Query (Span 5) :35, 45
+    
+    section Payment
+    Span 6 (SLOW!) :50, 85
+    Payment Gateway (Span 7) :55, 85
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    DEBUGGING WITH TRACING                            │
-│                                                                      │
-│   Trace ID: abc-123-xyz                                             │
-│                                                                      │
-│   ┌─────────────────────────────────────────────────────────────┐   │
-│   │ API Gateway [Span 1]                                   100ms│   │
-│   │ ├─────────────────────────────────────────────────────────┤│   │
-│   │ │ Order Service [Span 2]                            80ms  ││   │
-│   │ │ ├───────────────────────────────────────────────────────┤│   │
-│   │ │ │ User Service [Span 3]                    15ms         ││   │
-│   │ │ ├───────────────────────────────────────────────────────┤│   │
-│   │ │ │ Inventory Service [Span 4]               20ms         ││   │
-│   │ │ │ └── Database Query [Span 5]        10ms               ││   │
-│   │ │ ├───────────────────────────────────────────────────────┤│   │
-│   │ │ │ Payment Service [Span 6]                 35ms ← SLOW! ││   │
-│   │ │ │ └── Payment Gateway [Span 7]       30ms               ││   │
-│   │ │ └───────────────────────────────────────────────────────┘│   │
-│   │ └─────────────────────────────────────────────────────────┘│   │
-│   └─────────────────────────────────────────────────────────────┘   │
-│                                                                      │
-│   Finding: Payment Gateway external call is the bottleneck          │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
-```
+
+**Finding:** Payment Gateway external call is the bottleneck (35ms out of 100ms total)
 
 ---
 
@@ -71,33 +61,24 @@ Distributed tracing is a method for tracking requests as they flow through distr
 
 ### Trace, Span, and Context
 
+```mermaid
+graph TB
+    subgraph Trace["TRACE: End-to-end journey<br/>(Trace ID: abc-123-xyz)"]
+        subgraph Span1["SPAN: Unit of work"]
+            S1["Span ID: span-001<br/>Parent ID: null (root)<br/>Operation: HTTP GET /orders<br/>Service: api-gateway<br/>Duration: 100ms<br/>Tags: {http.method: GET, http.status: 200}<br/>Logs: [{timestamp, event: 'received request'}]"]
+        end
+        
+        subgraph Span2["SPAN: Child span"]
+            S2["Span ID: span-002<br/>Parent ID: span-001<br/>Operation: processOrder<br/>Service: order-service<br/>Duration: 80ms"]
+        end
+        
+        S1 -->|Parent-Child<br/>Relationship| S2
+    end
+    
+    style Trace fill:#e1f5ff,stroke:#333,stroke-width:2px
+    style Span1 fill:#ffe1e1,stroke:#333,stroke-width:2px
+    style Span2 fill:#e1ffe1,stroke:#333,stroke-width:2px
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         TRACING CONCEPTS                             │
-│                                                                      │
-│   TRACE: End-to-end journey of a request                            │
-│   ┌─────────────────────────────────────────────────────────────┐   │
-│   │ Trace ID: abc-123-xyz                                       │   │
-│   │                                                              │   │
-│   │   SPAN: A unit of work (service call, DB query, etc.)       │   │
-│   │   ┌───────────────────────────────────────────────────────┐ │   │
-│   │   │ Span ID: span-001                                     │ │   │
-│   │   │ Parent ID: null (root span)                           │ │   │
-│   │   │ Operation: HTTP GET /orders                           │ │   │
-│   │   │ Service: api-gateway                                  │ │   │
-│   │   │ Duration: 100ms                                       │ │   │
-│   │   │ Tags: {http.method: GET, http.status: 200}           │ │   │
-│   │   │ Logs: [{timestamp, event: "received request"}]        │ │   │
-│   │   └───────────────────────────────────────────────────────┘ │   │
-│   │         │                                                    │   │
-│   │         ▼ Parent-Child Relationship                         │   │
-│   │   ┌───────────────────────────────────────────────────────┐ │   │
-│   │   │ Span ID: span-002                                     │ │   │
-│   │   │ Parent ID: span-001                                   │ │   │
-│   │   │ Operation: processOrder                               │ │   │
-│   │   │ Service: order-service                                │ │   │
-│   │   │ Duration: 80ms                                        │ │   │
-│   │   └───────────────────────────────────────────────────────┘ │   │
 │   │                                                              │   │
 │   └─────────────────────────────────────────────────────────────┘   │
 │                                                                      │
