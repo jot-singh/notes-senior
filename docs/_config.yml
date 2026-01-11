@@ -1,0 +1,41 @@
+title: Senior Developer Notes
+description: Comprehensive technical notes covering Microservices, System Design, Java, REST API, Low-Level Design, DBMS, and NoSQL
+theme: jekyll-theme-cayman
+baseurl: /notes-senior
+url: https://yourusername.github.io
+
+# Collections
+collections:
+  dbms:
+    output: true
+    permalink: /:collection/:name
+  java:
+    output: true
+    permalink: /:collection/:name
+  lld:
+    output: true
+    permalink: /:collection/:name
+  microservices:
+    output: true
+    permalink: /:collection/:name
+  nosql:
+    output: true
+    permalink: /:collection/:name
+  rest-api:
+    output: true
+    permalink: /:collection/:name
+  system-design:
+    output: true
+    permalink: /:collection/:name
+
+# Build settings
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Exclude from processing
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock

@@ -1,0 +1,176 @@
+---
+layout: default
+title: Home
+---
+
+<div class="home-container">
+  <header class="page-header">
+    <h1 class="project-name">Senior Developer Notes</h1>
+    <h2 class="project-tagline">Comprehensive technical notes for senior-level software engineering</h2>
+  </header>
+
+  <section class="main-content">
+    <h2>Welcome</h2>
+    <p>
+      This repository contains in-depth, production-ready technical notes covering essential topics for senior software developers.
+      Each note provides comprehensive explanations, code examples in multiple languages, real-world scenarios, and best practices.
+    </p>
+
+    <h2>Topics</h2>
+
+    <div class="topic-grid">
+      <div class="topic-card">
+        <h3><a href="microservices/">🔧 Microservices</a></h3>
+        <p>Architecture patterns, service discovery, API gateways, event-driven systems, service mesh, distributed tracing, and deployment strategies.</p>
+        <ul>
+          <li><a href="microservices/01-microservices-fundamentals.html">Fundamentals</a></li>
+          <li><a href="microservices/02-service-discovery.html">Service Discovery</a></li>
+          <li><a href="microservices/03-api-gateway.html">API Gateway</a></li>
+          <li><a href="microservices/04-event-driven-architecture.html">Event-Driven Architecture</a></li>
+        </ul>
+      </div>
+
+      <div class="topic-card">
+        <h3><a href="system-design/">🏗️ System Design</a></h3>
+        <p>Scalability patterns, load balancing, caching strategies, database sharding, CDN, message queues, and distributed system design.</p>
+        <ul>
+          <li><a href="system-design/01-load-balancing.html">Load Balancing</a></li>
+        </ul>
+      </div>
+
+      <div class="topic-card">
+        <h3><a href="java/">☕ Java</a></h3>
+        <p>Deep dive into Java fundamentals, concurrency, JVM internals, design patterns, Spring Framework, performance optimization, and best practices.</p>
+        <ul>
+          <li><a href="java/01-java-fundamentals.html">Java Fundamentals</a></li>
+          <li><a href="java/02-java-concurrency.html">Concurrency</a></li>
+          <li><a href="java/03-jvm-internals.html">JVM Internals</a></li>
+          <li><a href="java/05-spring-framework.html">Spring Framework</a></li>
+        </ul>
+      </div>
+
+      <div class="topic-card">
+        <h3><a href="rest-api/">🌐 REST API</a></h3>
+        <p>API design principles, authentication, security, error handling, versioning, caching, idempotency, documentation, and testing.</p>
+        <ul>
+          <li><a href="rest-api/01-rest-api-fundamentals.html">Fundamentals</a></li>
+          <li><a href="rest-api/02-api-design-principles.html">Design Principles</a></li>
+          <li><a href="rest-api/03-authentication-authorization.html">Auth</a></li>
+          <li><a href="rest-api/04-security-best-practices.html">Security</a></li>
+        </ul>
+      </div>
+
+      <div class="topic-card">
+        <h3><a href="lld/">📐 Low-Level Design</a></h3>
+        <p>Design patterns, SOLID principles, object-oriented design, interview problems, and concurrency patterns.</p>
+        <ul>
+          <li><a href="lld/01-lld-fundamentals.html">Fundamentals</a></li>
+          <li><a href="lld/02-creational-patterns.html">Creational Patterns</a></li>
+          <li><a href="lld/03-structural-patterns.html">Structural Patterns</a></li>
+          <li><a href="lld/04-behavioral-patterns.html">Behavioral Patterns</a></li>
+        </ul>
+      </div>
+
+      <div class="topic-card">
+        <h3><a href="dbms/">💾 DBMS</a></h3>
+        <p>Database fundamentals, ACID transactions, indexing, normalization, query optimization, concurrency control, and backup/recovery.</p>
+        <ul>
+          <li><a href="dbms/01-dbms-fundamentals.html">Fundamentals</a></li>
+          <li><a href="dbms/02-transactions-acid.html">Transactions & ACID</a></li>
+          <li><a href="dbms/03-indexing.html">Indexing</a></li>
+          <li><a href="dbms/04-normalization.html">Normalization</a></li>
+        </ul>
+      </div>
+
+      <div class="topic-card">
+        <h3><a href="nosql/">🗄️ NoSQL</a></h3>
+        <p>NoSQL fundamentals, Cassandra, MongoDB, key-value stores, document databases, column-family stores, and graph databases.</p>
+        <ul>
+          <li><a href="nosql/01-nosql-fundamentals.html">Fundamentals</a></li>
+          <li><a href="nosql/02-cassandra.html">Cassandra</a></li>
+          <li><a href="nosql/03-mongodb.html">MongoDB</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Content Standards</h2>
+    <ul>
+      <li><strong>Senior-Level Focus:</strong> Assumes strong programming background and production experience</li>
+      <li><strong>Comprehensive Coverage:</strong> Each topic includes theory, implementation, trade-offs, and best practices</li>
+      <li><strong>Multi-Language Examples:</strong> Code examples in Java, JavaScript, Python, and other relevant languages</li>
+      <li><strong>Real-World Scenarios:</strong> Practical applications with scalability, performance, and security considerations</li>
+      <li><strong>Production-Ready:</strong> Includes metrics, monitoring, testing strategies, and operational concerns</li>
+    </ul>
+
+    <h2>How to Use</h2>
+    <ol>
+      <li>Navigate to any topic area using the links above</li>
+      <li>Each topic is a comprehensive, single-page guide</li>
+      <li>Notes include code examples, diagrams, and real-world applications</li>
+      <li>Topics are ordered sequentially but can be read independently</li>
+    </ol>
+
+    <footer class="site-footer">
+      <p>Last updated: {{ site.time | date: '%B %d, %Y' }}</p>
+      <p><a href="https://github.com/yourusername/notes-senior">View on GitHub</a></p>
+    </footer>
+  </section>
+</div>
+
+<style>
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+
+  .topic-card {
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 1.5rem;
+    background-color: #f6f8fa;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .topic-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .topic-card h3 {
+    margin-top: 0;
+    color: #0366d6;
+  }
+
+  .topic-card h3 a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .topic-card h3 a:hover {
+    text-decoration: underline;
+  }
+
+  .topic-card ul {
+    padding-left: 1.5rem;
+    margin-bottom: 0;
+  }
+
+  .topic-card li {
+    margin: 0.5rem 0;
+  }
+
+  .site-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e1e4e8;
+    text-align: center;
+    color: #586069;
+  }
+
+  @media (max-width: 768px) {
+    .topic-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
