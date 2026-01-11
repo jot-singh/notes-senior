@@ -53,6 +53,60 @@ System design encompasses the architecture, components, and trade-offs involved 
 - AWS SQS: standard vs FIFO queues
 - Dead letter queues and error handling
 
+### 7. [Rate Limiting](07-rate-limiting.md)
+- Rate limiting algorithms and strategies
+- Token bucket, leaky bucket, fixed window
+- Distributed rate limiting
+- API throttling and quota management
+
+### 8. [API Gateway](08-api-gateway.md)
+- API gateway patterns and responsibilities
+- Request routing and load balancing
+- Authentication and authorization
+- Rate limiting and caching
+
+### 9. [Service Discovery](09-service-discovery.md)
+- Service registry patterns
+- Client-side vs server-side discovery
+- Health checking and heartbeats
+- Consul, Eureka, etcd implementations
+
+### 10. [System Design Interview Questions](10-system-design-interview-questions.md)
+- Common interview patterns
+- Design Twitter, Instagram, URL shortener
+- Capacity estimation techniques
+- Trade-off analysis
+
+### 11. [Distributed Systems Fundamentals](11-distributed-systems-fundamentals.md)
+- Consistency models (strong, eventual, causal)
+- Consensus algorithms (Paxos, Raft)
+- Logical clocks (Lamport, Vector clocks)
+- Quorum-based replication
+- Gossip protocols
+- Eight fallacies of distributed computing
+
+### 12. [High Availability and Fault Tolerance](12-high-availability-fault-tolerance.md)
+- Availability metrics and the nines
+- SLA, SLO, SLI definitions
+- Redundancy patterns (active-active, active-passive)
+- Circuit breakers and bulkhead patterns
+- Disaster recovery and backup strategies
+- Chaos engineering principles
+
+### 13. [Monitoring and Observability](13-monitoring-observability.md)
+- Three pillars: metrics, logs, traces
+- Distributed tracing implementation
+- SLI/SLO-based alerting
+- Context propagation and correlation IDs
+- Observability tools (Prometheus, Grafana, Jaeger)
+
+### 14. [Security in Distributed Systems](14-security-distributed-systems.md)
+- Authentication patterns (JWT, OAuth 2.0, API keys)
+- Authorization (RBAC, ABAC)
+- Encryption in transit and at rest
+- DDoS protection and rate limiting
+- Security best practices and anti-patterns
+
 ## Core Concepts
 
 ### Scalability
