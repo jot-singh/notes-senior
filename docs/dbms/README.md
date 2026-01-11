@@ -52,6 +52,33 @@ Comprehensive senior-level notes on database systems, covering fundamentals thro
    - Statistics and cardinality estimation
    - Query performance best practices
 
+6. **[Concurrency Control and Locking](06-concurrency-control.md)**
+   - Lock types (Shared, Exclusive, Intent locks)
+   - Two-Phase Locking protocol (2PL)
+   - Deadlock detection and prevention
+   - Multi-Version Concurrency Control (MVCC)
+   - Optimistic vs Pessimistic locking
+   - Lock granularity and performance trade-offs
+   - Distributed locking mechanisms
+
+7. **[SQL Advanced Concepts](07-sql-advanced-concepts.md)**
+   - Window functions (RANK, ROW_NUMBER, LAG, LEAD)
+   - Common Table Expressions (CTEs) and recursive queries
+   - LATERAL joins for correlated subqueries
+   - JSON and JSONB operations
+   - Stored procedures and functions
+   - Triggers and their use cases
+   - Dynamic SQL and security considerations
+
+8. **[Database Backup and Recovery](08-backup-recovery.md)**
+   - Backup strategies (Full, Incremental, Differential)
+   - Point-in-Time Recovery (PITR)
+   - Hot vs Cold backups
+   - Database replication architectures
+   - Disaster recovery planning (RTO/RPO)
+   - Backup verification and testing
+   - Cloud backup strategies
+
 ## Quick Reference
 
 ### When to Use Different Database Models
