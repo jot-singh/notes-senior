@@ -22,21 +22,34 @@ Low-Level Design (LLD) is the process of designing the internal structure of a s
 - Interface contracts
 - Error handling strategies
 
-```mermaid
-flowchart TB
-    subgraph Hierarchy["SYSTEM DESIGN HIERARCHY"]
-        HLD["HIGH-LEVEL DESIGN<br/>━━━━━━━━━━━━━━━━━━━━━━<br/>• System Architecture<br/>• Component Interaction<br/>• Technology Stack<br/>• Scalability Strategy<br/>• Database Selection<br/>• API Design"]
-        
-        LLD["LOW-LEVEL DESIGN<br/>━━━━━━━━━━━━━━━━━━━━━━<br/>• Class Diagrams<br/>• Method Signatures<br/>• Design Patterns<br/>• Data Structures<br/>• Algorithms<br/>• Interface Contracts"]
-        
-        Impl["IMPLEMENTATION<br/>━━━━━━━━━━━━━━━━━━━━━━<br/>• Actual Code<br/>• Unit Tests<br/>• Documentation<br/>• Code Reviews"]
-        
-        HLD --> LLD --> Impl
-    end
-    
-    style HLD fill:#ffe1e1,stroke:#333,stroke-width:2px
-    style LLD fill:#e1ffe1,stroke:#333,stroke-width:2px
-    style Impl fill:#e1f5ff,stroke:#333,stroke-width:2px
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    SYSTEM DESIGN HIERARCHY                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │                  HIGH-LEVEL DESIGN                        │   │
+│  │  • System Architecture    • Component Interaction         │   │
+│  │  • Technology Stack       • Scalability Strategy          │   │
+│  │  • Database Selection     • API Design                    │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                            │                                     │
+│                            ▼                                     │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │                   LOW-LEVEL DESIGN                        │   │
+│  │  • Class Diagrams         • Method Signatures             │   │
+│  │  • Design Patterns        • Data Structures               │   │
+│  │  • Algorithms             • Interface Contracts           │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                            │                                     │
+│                            ▼                                     │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │                    IMPLEMENTATION                         │   │
+│  │  • Actual Code            • Unit Tests                    │   │
+│  │  • Documentation          • Code Reviews                  │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
