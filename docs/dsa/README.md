@@ -33,18 +33,20 @@ These notes emphasize:
 - Monotonic stacks and deques
 - Real-world use cases: browser history, task scheduling, parsing
 
-### 4. [Hash Tables and Sets](04-hash-tables-sets.md)
-- Hash function design
-- Collision resolution strategies
-- Hash tables vs sets trade-offs
-- Real-world use cases: caching, deduplication, indexing
+### 4. [Binary Search Trees](04-binary-search-trees.md)
+- BST properties and invariants
+- Insert, search, delete operations
+- BST validation techniques
+- Self-balancing trees (AVL, Red-Black)
+- Common BST patterns (kth smallest, LCA, range queries)
+- Real-world use cases: database indexes, ordered caches
 
 ### 5. [Trees Fundamentals](05-trees.md)
 - Binary trees and properties
-- Binary search trees (BST)
 - Tree traversal patterns (in-order, pre-order, post-order, level-order)
+- Tree construction and manipulation
 - Balanced trees overview
-- Real-world use cases: file systems, DOM, database indexes
+- Real-world use cases: file systems, DOM, expression trees
 
 ### 6. [Graphs Fundamentals](06-graphs.md)
 - Graph representations and types
