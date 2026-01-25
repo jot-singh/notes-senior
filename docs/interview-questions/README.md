@@ -44,6 +44,7 @@ Curated collection of coding questions that frequently appear in LinkedIn techni
 
 ### 3. [Trees and Binary Search](linkedin-trees.md)
 **Priority: HIGH** - Fundamental recursion and tree traversal
+- Connect nodes at same level
 - BST operations
 - Tree traversals
 - Path problems

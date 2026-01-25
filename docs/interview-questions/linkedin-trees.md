@@ -1,6 +1,12 @@
-# Interesting Tree Problems
+# LinkedIn Trees Interview Questions
+
+⭐⭐⭐⭐⭐ High-frequency problems for LinkedIn coding interviews
 
 ## Problem 1: Connect Nodes at Same Level (Populating Next Right Pointers)
+
+**Frequency**: ⭐⭐⭐⭐⭐  
+**Difficulty**: Medium  
+**LinkedIn Context**: Tests understanding of level-order traversal optimization and pointer manipulation
 
 ### Problem Statement
 
