@@ -1,6 +1,22 @@
-# LinkedIn Interview Questions - Coding Round Focus
+# Interview Questions Directory
 
-Curated collection of coding questions that frequently appear in LinkedIn technical interviews and similar FAANG-level companies. These questions are organized by pattern and difficulty, emphasizing the problem-solving approaches that interviewers look for.
+Comprehensive collection of coding interview questions organized by company and topic, with emphasis on pattern recognition and problem-solving approaches used in FAANG-level technical interviews.
+
+---
+
+## Quick Navigation
+
+### Company-Specific Collections
+
+| Company | Topics Covered | Link |
+|---------|----------------|------|
+| LinkedIn | Arrays/Strings, Graphs, Dynamic Programming | [company-specific/](company-specific/) |
+
+### Topic-Based Collections
+
+| Topic | Problems | Companies | Difficulty Range | Link |
+|-------|----------|-----------|------------------|------|
+| Trees | Connect Nodes at Same Level | Google, Amazon | Hard | [topics/trees/](topics/trees/) |
 
 ---
 

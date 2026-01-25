@@ -2,7 +2,8 @@
 
 ## Problem 1: Connect Nodes at Same Level (Populating Next Right Pointers)
 
-**Difficulty**: Medium  
+**Difficulty**: Hard  
+**Companies**: Google, Amazon  
 **Key Concept**: Level-order traversal with O(1) space using next pointers
 
 ### Problem Statement
