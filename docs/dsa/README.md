@@ -48,6 +48,13 @@ These notes emphasize:
 - Balanced trees overview
 - Real-world use cases: file systems, DOM, expression trees
 
+### 5.1 [Tries (Prefix Trees)](05.01-tries.md)
+- Trie structure and intuition
+- Insert, search, and prefix operations
+- Space optimization techniques (compressed tries)
+- Autocomplete and spell-checking patterns
+- Real-world use cases: search engines, IP routing, dictionaries
+
 ### 6. [Graphs Fundamentals](06-graphs.md)
 - Graph representations and types
 - Graph traversal (BFS, DFS)
@@ -71,14 +78,7 @@ These notes emphasize:
 - State definition strategies
 - Real-world use cases: optimization problems, route planning
 
-### 10. [Tries (Prefix Trees)](10-tries.md)
-- Trie structure and intuition
-- Insert, search, and prefix operations
-- Space optimization techniques (compressed tries)
-- Autocomplete and spell-checking patterns
-- Real-world use cases: search engines, IP routing, dictionaries
-
-### 11. [Heaps and Priority Queues](11-heaps-priority-queues.md)
+### 10. [Heaps and Priority Queues](10-heaps-priority-queues.md)
 - Binary heaps implementation
 - Min/max heap operations
 - Priority queue patterns
