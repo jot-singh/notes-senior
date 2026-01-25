@@ -71,7 +71,14 @@ These notes emphasize:
 - State definition strategies
 - Real-world use cases: optimization problems, route planning
 
-### 10. [Heaps and Priority Queues](10-heaps-priority-queues.md)
+### 10. [Tries (Prefix Trees)](10-tries.md)
+- Trie structure and intuition
+- Insert, search, and prefix operations
+- Space optimization techniques (compressed tries)
+- Autocomplete and spell-checking patterns
+- Real-world use cases: search engines, IP routing, dictionaries
+
+### 11. [Heaps and Priority Queues](11-heaps-priority-queues.md)
 - Binary heaps implementation
 - Min/max heap operations
 - Priority queue patterns
@@ -108,7 +115,7 @@ These notes emphasize:
 - Hash Tables, Arrays, Linked Lists (LRU), Bloom Filters
 
 ### Searching and Retrieval
-- Binary Search, Hash Tables, Trees (BST), B-trees
+- Binary Search, Hash Tables, Trees (BST), Tries, B-trees
 
 ### Graph Problems (Networks, Routes)
 - BFS, DFS, Dijkstra's, Topological Sort
