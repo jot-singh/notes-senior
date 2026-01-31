@@ -2,14 +2,17 @@
 
 ## What You'll Learn
 - Graph representations and when to use each
-- Breadth-First Search (BFS) and Depth-First Search (DFS) traversal
+- BFS and DFS traversal with problem-solving patterns
 - Topological sorting for dependency resolution
-- Cycle detection and connectivity analysis
-- Real-world graph applications: social networks, maps, recommendations
+- Shortest path algorithms (BFS, Dijkstra's, Bellman-Ford)
+- Cycle detection and bipartite checking
+- Union-Find for connected components
+- Minimum spanning trees (Kruskal's, Prim's)
+- Real-world applications: social networks, maps, recommendations
 
 ## Why This Matters
 
-Graphs model **relationships without hierarchy** - the most flexible data structure for representing connections. Social networks are graphs, route planning is graphs, recommendation systems are graphs. Mastering graph algorithms unlocks solutions to countless real-world problems.
+Graphs model **relationships without hierarchy**—the most flexible structure for representing connections. They're everywhere: social networks (LinkedIn connections), route planning (Google Maps), dependency resolution (build systems), recommendation engines (Netflix), web crawlers (page links), network topology (routers). Unlike trees with rigid parent-child relationships, graphs capture arbitrary relationships. Mastering graphs means understanding how the connected world works and solving problems from scheduling to pathfinding to influence mapping.
 
 ---
 
@@ -675,6 +678,715 @@ while (!queue.isEmpty()) {
 | Topological Sort | O(V + E) | O(V) | DAGs only |
 | Cycle Detection | O(V + E) | O(V) | Directed graphs |
 | Connected Components | O(V + E) | O(V) | Count separate graphs |
+
+---
+
+## Advanced Graph Algorithms
+
+### Pattern 4: Dijkstra's Algorithm (Shortest Path in Weighted Graph)
+
+**When to use**: Finding shortest path in weighted graph with non-negative weights.
+
+```java
+public class Dijkstra {
+    // Find shortest distances from source to all nodes
+    public Map<Integer, Integer> shortestPath(Map<Integer, List<Edge>> graph, int source) {
+        Map<Integer, Integer> dist = new HashMap<>();
+        
+        // Min-heap: (distance, node)
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        pq.offer(new int[]{0, source});
+        dist.put(source, 0);
+        
+        while (!pq.isEmpty()) {
+            int[] current = pq.poll();
+            int d = current[0];
+            int u = current[1];
+            
+            // Skip if we've found shorter path already
+            if (d > dist.getOrDefault(u, Integer.MAX_VALUE)) {
+                continue;
+            }
+            
+            // Relax edges
+            for (Edge edge : graph.getOrDefault(u, new ArrayList<>())) {
+                int v = edge.to;
+                int weight = edge.weight;
+                int newDist = d + weight;
+                
+                if (newDist < dist.getOrDefault(v, Integer.MAX_VALUE)) {
+                    dist.put(v, newDist);
+                    pq.offer(new int[]{newDist, v});
+                }
+            }
+        }
+        
+        return dist;
+    }
+    
+    // With path reconstruction
+    public List<Integer> shortestPathWithRoute(Map<Integer, List<Edge>> graph, 
+                                               int source, int target) {
+        Map<Integer, Integer> dist = new HashMap<>();
+        Map<Integer, Integer> parent = new HashMap<>();
+        
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        pq.offer(new int[]{0, source});
+        dist.put(source, 0);
+        parent.put(source, -1);
+        
+        while (!pq.isEmpty()) {
+            int[] current = pq.poll();
+            int d = current[0];
+            int u = current[1];
+            
+            if (u == target) break;  // Found shortest path to target
+            
+            if (d > dist.getOrDefault(u, Integer.MAX_VALUE)) continue;
+            
+            for (Edge edge : graph.getOrDefault(u, new ArrayList<>())) {
+                int v = edge.to;
+                int newDist = d + edge.weight;
+                
+                if (newDist < dist.getOrDefault(v, Integer.MAX_VALUE)) {
+                    dist.put(v, newDist);
+                    parent.put(v, u);
+                    pq.offer(new int[]{newDist, v});
+                }
+            }
+        }
+        
+        // Reconstruct path
+        List<Integer> path = new ArrayList<>();
+        if (!parent.containsKey(target)) return path;  // No path
+        
+        int current = target;
+        while (current != -1) {
+            path.add(0, current);
+            current = parent.get(current);
+        }
+        
+        return path;
+    }
+    
+    static class Edge {
+        int to, weight;
+        Edge(int to, int weight) {
+            this.to = to;
+            this.weight = weight;
+        }
+    }
+}
+
+// Time: O((V + E) log V) with binary heap
+// Space: O(V) for distances and heap
+
+// Why priority queue?
+// Always process closest unvisited node
+// Ensures we find shortest path first
+
+// Example:
+//     1 --(4)-- 2
+//     |         |
+//    (1)       (2)
+//     |         |
+//     3 --(5)-- 4
+//
+// From 1: dist[1]=0, dist[3]=1, dist[2]=4, dist[4]=3 (via 3→4)
+```
+
+### Pattern 5: Bellman-Ford (Shortest Path with Negative Weights)
+
+**When to use**: Weighted graph with negative edges, detect negative cycles.
+
+```java
+public class BellmanFord {
+    public Map<Integer, Integer> shortestPath(int n, List<Edge> edges, int source) {
+        Map<Integer, Integer> dist = new HashMap<>();
+        
+        // Initialize distances
+        for (int i = 0; i < n; i++) {
+            dist.put(i, Integer.MAX_VALUE);
+        }
+        dist.put(source, 0);
+        
+        // Relax all edges V-1 times
+        for (int i = 0; i < n - 1; i++) {
+            for (Edge edge : edges) {
+                if (dist.get(edge.from) != Integer.MAX_VALUE) {
+                    int newDist = dist.get(edge.from) + edge.weight;
+                    if (newDist < dist.get(edge.to)) {
+                        dist.put(edge.to, newDist);
+                    }
+                }
+            }
+        }
+        
+        // Check for negative cycles
+        for (Edge edge : edges) {
+            if (dist.get(edge.from) != Integer.MAX_VALUE) {
+                int newDist = dist.get(edge.from) + edge.weight;
+                if (newDist < dist.get(edge.to)) {
+                    throw new IllegalStateException("Negative cycle detected");
+                }
+            }
+        }
+        
+        return dist;
+    }
+    
+    static class Edge {
+        int from, to, weight;
+        Edge(int from, int to, int weight) {
+            this.from = from;
+            this.to = to;
+            this.weight = weight;
+        }
+    }
+}
+
+// Time: O(V × E)
+// Space: O(V)
+
+// Why V-1 iterations?
+// Longest simple path has at most V-1 edges
+// After V-1 iterations, all shortest paths found
+
+// Use when:
+// - Graph has negative weights
+// - Need to detect negative cycles
+// - Simpler to implement than Dijkstra for small graphs
+```
+
+### Pattern 6: Union-Find (Disjoint Set Union)
+
+**When to use**: Connected components, cycle detection in undirected graphs, Kruskal's MST.
+
+```java
+public class UnionFind {
+    private int[] parent;
+    private int[] rank;
+    private int components;
+    
+    public UnionFind(int n) {
+        parent = new int[n];
+        rank = new int[n];
+        components = n;
+        
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;  // Each node is its own parent initially
+            rank[i] = 0;
+        }
+    }
+    
+    // Find with path compression
+    public int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]);  // Path compression
+        }
+        return parent[x];
+    }
+    
+    // Union by rank
+    public boolean union(int x, int y) {
+        int rootX = find(x);
+        int rootY = find(y);
+        
+        if (rootX == rootY) {
+            return false;  // Already in same set
+        }
+        
+        // Union by rank: attach smaller tree under larger
+        if (rank[rootX] < rank[rootY]) {
+            parent[rootX] = rootY;
+        } else if (rank[rootX] > rank[rootY]) {
+            parent[rootY] = rootX;
+        } else {
+            parent[rootY] = rootX;
+            rank[rootX]++;
+        }
+        
+        components--;
+        return true;
+    }
+    
+    public boolean connected(int x, int y) {
+        return find(x) == find(y);
+    }
+    
+    public int getComponents() {
+        return components;
+    }
+}
+
+// Time: O(α(n)) per operation where α is inverse Ackermann (nearly O(1))
+// Space: O(n)
+
+// Applications:
+// 1. Cycle detection in undirected graph
+public boolean hasCycle(int n, int[][] edges) {
+    UnionFind uf = new UnionFind(n);
+    
+    for (int[] edge : edges) {
+        if (!uf.union(edge[0], edge[1])) {
+            return true;  // Edge creates cycle
+        }
+    }
+    
+    return false;
+}
+
+// 2. Count connected components
+public int countComponents(int n, int[][] edges) {
+    UnionFind uf = new UnionFind(n);
+    
+    for (int[] edge : edges) {
+        uf.union(edge[0], edge[1]);
+    }
+    
+    return uf.getComponents();
+}
+
+// 3. Check if graph is connected
+public boolean isConnected(int n, int[][] edges) {
+    UnionFind uf = new UnionFind(n);
+    
+    for (int[] edge : edges) {
+        uf.union(edge[0], edge[1]);
+    }
+    
+    return uf.getComponents() == 1;
+}
+```
+
+### Pattern 7: Minimum Spanning Tree (Kruskal's Algorithm)
+
+**When to use**: Connect all nodes with minimum total edge weight, network design.
+
+```java
+public class KruskalMST {
+    public List<Edge> findMST(int n, List<Edge> edges) {
+        // Sort edges by weight
+        edges.sort((a, b) -> a.weight - b.weight);
+        
+        UnionFind uf = new UnionFind(n);
+        List<Edge> mst = new ArrayList<>();
+        int totalWeight = 0;
+        
+        for (Edge edge : edges) {
+            // Add edge if it doesn't create cycle
+            if (uf.union(edge.from, edge.to)) {
+                mst.add(edge);
+                totalWeight += edge.weight;
+                
+                // MST has exactly n-1 edges
+                if (mst.size() == n - 1) {
+                    break;
+                }
+            }
+        }
+        
+        return mst;
+    }
+    
+    static class Edge {
+        int from, to, weight;
+        Edge(int from, int to, int weight) {
+            this.from = from;
+            this.to = to;
+            this.weight = weight;
+        }
+    }
+}
+
+// Time: O(E log E) for sorting + O(E × α(V)) for union-find ≈ O(E log E)
+// Space: O(V) for union-find
+
+// Example: Network cable installation
+// Nodes = buildings, weights = cable costs
+// MST = minimum cost to connect all buildings
+
+// 0 --(4)-- 1
+// |         |
+// (5)      (3)
+// |         |
+// 2 --(2)-- 3
+//
+// MST: edges (2,3), (1,3), (0,1) with total weight 9
+```
+
+### Pattern 8: Prim's Algorithm (Alternative MST)
+
+**When to use**: MST with dense graphs, incrementally growing tree.
+
+```java
+public class PrimMST {
+    public List<Edge> findMST(Map<Integer, List<Edge>> graph, int start) {
+        List<Edge> mst = new ArrayList<>();
+        Set<Integer> visited = new HashSet<>();
+        
+        // Min-heap: (weight, from, to)
+        PriorityQueue<Edge> pq = new PriorityQueue<>((a, b) -> a.weight - b.weight);
+        
+        // Start with arbitrary node
+        visited.add(start);
+        for (Edge edge : graph.get(start)) {
+            pq.offer(edge);
+        }
+        
+        while (!pq.isEmpty() && visited.size() < graph.size()) {
+            Edge edge = pq.poll();
+            
+            // Skip if already visited
+            if (visited.contains(edge.to)) {
+                continue;
+            }
+            
+            // Add edge to MST
+            mst.add(edge);
+            visited.add(edge.to);
+            
+            // Add new edges
+            for (Edge nextEdge : graph.get(edge.to)) {
+                if (!visited.contains(nextEdge.to)) {
+                    pq.offer(nextEdge);
+                }
+            }
+        }
+        
+        return mst;
+    }
+    
+    static class Edge {
+        int from, to, weight;
+        Edge(int from, int to, int weight) {
+            this.from = from;
+            this.to = to;
+            this.weight = weight;
+        }
+    }
+}
+
+// Time: O(E log V) with binary heap
+// Space: O(V + E)
+
+// Kruskal vs Prim:
+// Kruskal: Global view, sort all edges, good for sparse graphs
+// Prim: Local view, grow from one node, good for dense graphs
+```
+
+### Pattern 9: Bipartite Graph Check (Two-Coloring)
+
+**When to use**: Check if graph can be divided into two groups with no internal connections.
+
+```java
+public class BipartiteCheck {
+    // Color nodes with 2 colors such that no adjacent nodes have same color
+    public boolean isBipartite(Map<Integer, List<Integer>> graph, int n) {
+        int[] color = new int[n];  // 0 = uncolored, 1 = red, 2 = blue
+        
+        for (int i = 0; i < n; i++) {
+            if (color[i] == 0) {
+                if (!bfsColor(graph, i, color)) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    private boolean bfsColor(Map<Integer, List<Integer>> graph, int start, int[] color) {
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(start);
+        color[start] = 1;  // Start with red
+        
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            int currentColor = color[node];
+            int neighborColor = currentColor == 1 ? 2 : 1;
+            
+            for (int neighbor : graph.get(node)) {
+                if (color[neighbor] == 0) {
+                    color[neighbor] = neighborColor;
+                    queue.offer(neighbor);
+                } else if (color[neighbor] != neighborColor) {
+                    return false;  // Conflict: same color as parent
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    // DFS version
+    public boolean isBipartiteDFS(Map<Integer, List<Integer>> graph, int n) {
+        int[] color = new int[n];
+        
+        for (int i = 0; i < n; i++) {
+            if (color[i] == 0) {
+                if (!dfsColor(graph, i, 1, color)) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    private boolean dfsColor(Map<Integer, List<Integer>> graph, int node, 
+                            int c, int[] color) {
+        color[node] = c;
+        
+        for (int neighbor : graph.get(node)) {
+            if (color[neighbor] == c) {
+                return false;  // Same color
+            }
+            if (color[neighbor] == 0) {
+                if (!dfsColor(graph, neighbor, -c, color)) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+}
+
+// Time: O(V + E)
+// Space: O(V)
+
+// Applications:
+// - Job scheduling (day/night shifts)
+// - Coloring maps
+// - Matching problems (students to courses)
+// - Detecting odd-length cycles (bipartite ↔ no odd cycles)
+```
+
+---
+
+## Common Graph Patterns
+
+### Pattern: Clone Graph
+
+```java
+// Deep copy of graph
+public Node cloneGraph(Node node) {
+    if (node == null) return null;
+    
+    Map<Node, Node> cloned = new HashMap<>();
+    return cloneHelper(node, cloned);
+}
+
+private Node cloneHelper(Node node, Map<Node, Node> cloned) {
+    if (cloned.containsKey(node)) {
+        return cloned.get(node);
+    }
+    
+    Node copy = new Node(node.val);
+    cloned.put(node, copy);
+    
+    for (Node neighbor : node.neighbors) {
+        copy.neighbors.add(cloneHelper(neighbor, cloned));
+    }
+    
+    return copy;
+}
+
+// Used in: Deep copying data structures, serialization
+```
+
+### Pattern: Course Schedule (Cycle Detection + Topological Sort)
+
+```java
+public boolean canFinish(int numCourses, int[][] prerequisites) {
+    // Build graph
+    Map<Integer, List<Integer>> graph = new HashMap<>();
+    int[] inDegree = new int[numCourses];
+    
+    for (int i = 0; i < numCourses; i++) {
+        graph.put(i, new ArrayList<>());
+    }
+    
+    for (int[] prereq : prerequisites) {
+        int course = prereq[0];
+        int pre = prereq[1];
+        graph.get(pre).add(course);
+        inDegree[course]++;
+    }
+    
+    // Topological sort
+    Queue<Integer> queue = new LinkedList<>();
+    for (int i = 0; i < numCourses; i++) {
+        if (inDegree[i] == 0) {
+            queue.offer(i);
+        }
+    }
+    
+    int completed = 0;
+    while (!queue.isEmpty()) {
+        int course = queue.poll();
+        completed++;
+        
+        for (int next : graph.get(course)) {
+            inDegree[next]--;
+            if (inDegree[next] == 0) {
+                queue.offer(next);
+            }
+        }
+    }
+    
+    return completed == numCourses;
+}
+
+// If completed < numCourses, cycle exists
+```
+
+### Pattern: Number of Islands (Connected Components in Grid)
+
+```java
+public int numIslands(char[][] grid) {
+    if (grid == null || grid.length == 0) return 0;
+    
+    int count = 0;
+    
+    for (int i = 0; i < grid.length; i++) {
+        for (int j = 0; j < grid[0].length; j++) {
+            if (grid[i][j] == '1') {
+                dfs(grid, i, j);
+                count++;
+            }
+        }
+    }
+    
+    return count;
+}
+
+private void dfs(char[][] grid, int i, int j) {
+    if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || 
+        grid[i][j] == '0') {
+        return;
+    }
+    
+    grid[i][j] = '0';  // Mark as visited
+    
+    // Explore 4 directions
+    dfs(grid, i + 1, j);
+    dfs(grid, i - 1, j);
+    dfs(grid, i, j + 1);
+    dfs(grid, i, j - 1);
+}
+
+// BFS version
+public int numIslandsBFS(char[][] grid) {
+    if (grid == null || grid.length == 0) return 0;
+    
+    int count = 0;
+    
+    for (int i = 0; i < grid.length; i++) {
+        for (int j = 0; j < grid[0].length; j++) {
+            if (grid[i][j] == '1') {
+                bfs(grid, i, j);
+                count++;
+            }
+        }
+    }
+    
+    return count;
+}
+
+private void bfs(char[][] grid, int i, int j) {
+    Queue<int[]> queue = new LinkedList<>();
+    queue.offer(new int[]{i, j});
+    grid[i][j] = '0';
+    
+    int[][] dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+    
+    while (!queue.isEmpty()) {
+        int[] cell = queue.poll();
+        
+        for (int[] dir : dirs) {
+            int ni = cell[0] + dir[0];
+            int nj = cell[1] + dir[1];
+            
+            if (ni >= 0 && ni < grid.length && nj >= 0 && nj < grid[0].length &&
+                grid[ni][nj] == '1') {
+                grid[ni][nj] = '0';
+                queue.offer(new int[]{ni, nj});
+            }
+        }
+    }
+}
+```
+
+### Pattern: Word Ladder (Shortest Transformation)
+
+```java
+public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+    Set<String> dict = new HashSet<>(wordList);
+    if (!dict.contains(endWord)) return 0;
+    
+    Queue<String> queue = new LinkedList<>();
+    queue.offer(beginWord);
+    
+    int level = 1;
+    
+    while (!queue.isEmpty()) {
+        int size = queue.size();
+        
+        for (int i = 0; i < size; i++) {
+            String word = queue.poll();
+            
+            if (word.equals(endWord)) {
+                return level;
+            }
+            
+            // Try all possible transformations
+            char[] chars = word.toCharArray();
+            for (int j = 0; j < chars.length; j++) {
+                char original = chars[j];
+                
+                for (char c = 'a'; c <= 'z'; c++) {
+                    if (c == original) continue;
+                    
+                    chars[j] = c;
+                    String transformed = new String(chars);
+                    
+                    if (dict.contains(transformed)) {
+                        queue.offer(transformed);
+                        dict.remove(transformed);  // Mark as visited
+                    }
+                }
+                
+                chars[j] = original;  // Restore
+            }
+        }
+        
+        level++;
+    }
+    
+    return 0;
+}
+
+// Example: "hit" → "hot" → "dot" → "dog" → "cog"
+// Shortest transformation sequence length = 5
+```
+
+---
+
+## Graph Comparison Table
+
+| Algorithm | Use Case | Time | Space | Notes |
+|-----------|----------|------|-------|-------|
+| BFS | Shortest path (unweighted) | O(V + E) | O(V) | Uses queue |
+| DFS | Explore all paths, cycle detection | O(V + E) | O(V) | Uses stack/recursion |
+| Dijkstra | Shortest path (weighted, non-negative) | O((V + E) log V) | O(V) | Uses priority queue |
+| Bellman-Ford | Shortest path (with negative weights) | O(V × E) | O(V) | Detects negative cycles |
+| Topological Sort | Dependency resolution (DAG) | O(V + E) | O(V) | Kahn's algorithm |
+| Union-Find | Connected components, cycle detection | O(α(V)) per op | O(V) | Nearly constant time |
+| Kruskal's MST | Minimum spanning tree | O(E log E) | O(V) | Sort edges + union-find |
+| Prim's MST | Minimum spanning tree | O(E log V) | O(V + E) | Priority queue |
+| Floyd-Warshall | All-pairs shortest paths | O(V³) | O(V²) | Dynamic programming |
 
 ---
 
